@@ -1,0 +1,33 @@
+
+- first line always write "use strict": run in strict mode
+
+                                        Module
+-benefits of using module:
+    1. improve code maintainability
+
+    2. dont have to write code from scratch, module can be referenced elsewhere
+
+    3. using module avoid function and var name collision. Functions and vars with same name 
+    can exist in diff modules
+    
+
+- how to load customed module:
+
+    in hello.js:
+        'use strict';
+        var s = 'Hello';
+        function greet(name) {
+            console.log(s + ', ' + name + '!');
+        }
+        module.exports = greet;
+
+
+    in index.js: 
+        'use strict';
+        var greet = require('./hello');
+        var s = 'Michael';
+        greet(s); // Hello, Michael!
+
+
+
+    
