@@ -1,7 +1,8 @@
 
 - first line always write "use strict": run in strict mode
 
-                                        Module
+------------------------------------------------Module-----------------------------------------------------
+
 -benefits of using module:
     1. improve code maintainability
 
@@ -13,21 +14,56 @@
 
 - how to load customed module:
 
-    in hello.js:
-        'use strict';
-        var s = 'Hello';
-        function greet(name) {
-            console.log(s + ', ' + name + '!');
-        }
-        module.exports = greet;
+    1. export single function:
+            'use strict';
+            var s = 'Hello';
+            function greet(name) {
+                console.log(s + ', ' + name + '!');
+            }
+            module.exports = greet;
 
 
-    in index.js: 
-        'use strict';
-        var greet = require('./hello');
-        var s = 'Michael';
-        greet(s); // Hello, Michael!
+        in index.js: 
+            'use strict';
+            var greet = require('./hello');
+            var s = 'Michael';
+            greet(s); // Hello, Michael!
 
 
+    2. wrap multiple functions and export: 
 
-    
+        in hello.js:
+                function hello() {
+                    console.log('Hello, world!');
+                }
+                function greet(name) {
+                    console.log('Hello, ' + name + '!');
+                }
+
+                module.exports = {
+                    hello: hello,
+                    greet: greet
+                };
+
+   
+    3. export class:
+        //hello.js:
+        function Hello() { 
+            var name; 
+            this.setName = function(thyName) { 
+                name = thyName; 
+            }; 
+            this.sayHello = function() { 
+                console.log('Hello ' + name); 
+            }; 
+        }; 
+        module.exports = Hello;
+
+
+        //main.js 
+        var Hello = require('./hello'); 
+        hello = new Hello(); 
+        hello.setName('BYVoid'); 
+        hello.sayHello();       
+
+------------------------------------------------Module-----------------------------------------------------
