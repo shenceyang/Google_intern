@@ -67,3 +67,87 @@
         hello.sayHello();       
 
 ------------------------------------------------Module-----------------------------------------------------
+
+
+
+
+
+------------------------------------------------Process-----------------------------------------------------
+
+-process.nextTick(): is a method that allows you to schedule a callback function to be invoked in the next iteration 
+of the event loop, after the current operation completes(sync function), but before the event loop continues with the next phase.
+
+    eg. process.nextTick(() => {
+          console.log('This will run on the next iteration of the event loop.');
+        });
+
+        console.log('This will run immediately.');
+
+    output: This will run immediately.
+            This will run on the next iteration of the event loop.
+
+Even though process.nextTick() is placed before the immediate console.log, it will execute afterwards,
+showing that the event loop has moved to the next tick to process the callback.
+
+
+
+- The process.on('exit', callback) event listener in Node.js is used to execute a callback function when
+the Node.js process is about to exit. The exit event is emitted when the Node.js event loop has no additional 
+work to perform and the process is about to terminate.
+
+    eg. process.on('exit', function (code) {
+           console.log('about to exit with code: ' + code);
+        });
+
+
+
+- how to know if JS running env (node or browser):
+
+    if (typeof(window) === 'undefined') {
+        console.log('node.js');
+    } else {
+        console.log('browser');
+    }
+------------------------------------------------Process-----------------------------------------------------    
+
+
+
+
+
+------------------------------------------------Node Async and Callback----------------------------------------------
+
+-Callback: will be excuted after the task function is completed
+
+- blocking code:
+
+    var fs = require("fs");
+    var data = fs.readFileSync('input.txt');
+    console.log(data.toString());
+    console.log("program end");
+
+    => output:
+    123
+    program end
+
+    // when read complete, execute next line
+
+- non-blocking code:
+
+    var fs = require("fs");
+    fs.readFile('input.txt', function (err, data) {
+        if (err) return console.error(err);
+        console.log(data.toString());
+    });
+
+    console.log("program end");
+
+
+   => output:
+    program end
+    123 
+    
+    // excute next line directly, when read complete, execute callback.
+
+
+
+------------------------------------------------Node Async and Callback----------------------------------------------
