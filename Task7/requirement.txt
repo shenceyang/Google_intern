@@ -1,0 +1,4 @@
+Task7:
+Follow the instructions above to understand the writing of the asynchronous function and to implement the exchange 
+rate converter for use in subsequent projects.
+
