@@ -433,3 +433,19 @@ console.log("buffer2 content: " + buffer2.toString()); //ru
 //buffer length
 var buffer = Buffer.from('www.runoob.com');
 console.log("buffer length: " + buffer.length); //buffer length: 14
+
+
+//---------------------------------------------------------Nodejs buffer--------------------------------------------------------------
+
+
+
+
+
+//---------------------------------------------------------Node Utils--------------------------------------------------------------
+
+//util module is used to access some utility functions. It is a core module.
+const util = require('node:util');
+
+//check function here : https://nodejs.org/api/util.html
+
+//---------------------------------------------------------Node Utils--------------------------------------------------------------
