@@ -449,3 +449,183 @@ const util = require('node:util');
 //check function here : https://nodejs.org/api/util.html
 
 //---------------------------------------------------------Node Utils--------------------------------------------------------------
+
+
+
+
+
+//---------------------------------------------------------JS OOP--------------------------------------------------------------
+
+//check T4
+
+//---------------------------------------------------------JS OOP-------------------------------------------------------------- 
+
+
+
+//---------------------------------------------------------create Nodejs application--------------------------------------------------------------
+
+//step1:use require to load module
+var http = require('http');
+
+//step2:use createServer() to create server
+http.createServer(function(request, response) {
+    //send HTTP header
+    //HTTP status: 200 : OK
+    //content type: text/plain
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+
+    //send response data "Hello World"
+    response.end('Hello World\n');
+}).listen(8081); //listen on port 8081
+
+//---------------------------------------------------------create Nodejs application--------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------Nodejs Stream--------------------------------------------------------------
+
+
+/*
+
+-introduction:
+Streams are a module provided by Node.js, available only in the server-side environment. 
+The purpose of streams is to support a data structure known as a "stream."
+
+
+-what is stream?
+A stream is an abstract data structure. To understand it, you can compare it to a flow of water in a pipe, where water continuously
+moves from one place (like a water plant) to another (like your home's sink).
+
+Similarly, data can be thought of as a stream. 
+  For example, when you type on a keyboard, each character can be linked together to form a character stream. This stream goes from the
+keyboard input to an application. In technical terms, this is known as a standard input stream (stdin).
+  Likewise, if an application outputs characters one by one to a display, this is also considered a stream, known as a standard output 
+stream (stdout).
+
+A key characteristic of streams is that the data is ordered and must be processed sequentially, similar to reading or writing 
+in an orderly fashion. Unlike an array, you cannot randomly access elements in a stream.
+
+
+
+-Types of Streams:
+Read Streams: Used for reading data, like opening a stream to read data from a file.
+
+Write Streams: Used for writing data, such as continuously writing data into a file stream.
+
+
+
+-Streams in Node.js:
+In Node.js, a stream is also an object. Interacting with streams is primarily about responding to their events:
+    The data event indicates that stream data is available to read.
+    The end event signifies that the end of the stream has been reached, and there's no more data to read.
+    The error event indicates that an error has occurred during streaming.
+
+
+
+-Pros of Using Streams for Reading Files
+1. Memory Efficiency: When you use streams, the file data is handled in chunks, which means only a part of the file is kept
+in memory at any given time. This is particularly advantageous when dealing with large files, as it prevents your application 
+from consuming a lot of memory.
+
+2. Time Efficiency: Streams allow you to start processing data as soon as you have enough to work with, rather than waiting for the
+entire file to be read. This can lead to faster execution times, as processing can happen in parallel with reading.
+
+3. Scalability: Streaming is more scalable for processing large or potentially unknown-sized data sources. Since the data is handled
+in parts, the overall memory footprint remains low, regardless of the size of the data source.
+
+4. Flexibility in Data Handling: Streams can be piped together, allowing for more flexible and composable ways to handle data
+transformations. For example, you can read a file, transform the data, and write to another file all in a seamless flow.
+
+
+
+-Cons of Using Streams for Reading Files
+1. Complexity: Stream-based code can be more complex than simply reading a file all at once, especially for beginners.
+Managing the flow of data through events (data, end, error) requires a solid understanding of Node.js's asynchronous programming model.
+
+2. Error Handling: While error handling is a critical aspect of any application, it can be more challenging with streams.
+You need to properly handle errors for each part of the stream pipeline.
+
+3. Not Ideal for Small Files: For small files, the overhead of setting up a stream might not be worth it. 
+Reading the entire file into memory might be more efficient and simpler to code.
+
+
+*/
+
+
+
+'use strict';
+const fs = require('fs');
+
+//create a readable stream
+var rs = fs.createReadStream('sample.txt', 'utf-8');
+
+//data events could trigger multiple times, as the file is read in chunks.
+rs.on('data', function (chunk) {
+    console.log('DATA:')
+    console.log(chunk);
+});
+
+rs.on('end', function () {
+    console.log('END');
+});
+
+rs.on('error', function (err) {
+    console.log('ERROR: ' + err);
+});
+
+//create a writeable stream
+var ws1 = fs.createWriteStream('output1.txt', 'utf-8');
+ws1.write('使用Stream写入文本数据...\n');
+ws1.write('END.');
+ws1.end();
+
+
+//use buffer
+var ws2 = fs.createWriteStream('output2.txt');
+ws2.write(Buffer.from('使用Stream写入二进制数据...\n','utf-8'));
+ws2.write(Buffer.from('END.','utf-8'));
+ws2.end();
+
+
+
+
+
+
+/*                              Pipe   
+
+就像可以把两个水管串成一个更长的水管一样，两个stream也可以串起来。
+一个Readable stream 和一个Writable stream 串起来后，所有的数据自动从Readable stream进入Writable stream，这种操作叫pipe。
+
+
+readable stream has a method called pipe(). This method is used to take the output of one stream (the Readable stream) and
+connect it to the input of another stream (the Writable stream).
+
+*/
+
+var fs = require('fs');
+var rs = fs.createReadStream('sample.txt');
+var ws = fs.createWriteStream('copied.txt');
+rs.pipe(ws); //pipe rs to ws
+
+
+//默认情况下，当Readable流的数据读取完毕，end事件触发后，将自动关闭Writable流。如果我们不希望自动关闭Writable流，需要传入参数：
+readable.pipe(writable, { end: false });
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------Nodejs Stream--------------------------------------------------------------

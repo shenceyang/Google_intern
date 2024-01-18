@@ -1,0 +1,1 @@
+After reading an MP3 audio file in binary form through a pipe, it is then written to a New.MP3 file through another WriteStream.
