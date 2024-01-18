@@ -15,13 +15,8 @@ console.log(corrupted_data_received);
 
                         //how to restore
 //encode it back using utf8
-var utf8_buf= Buffer.from(corrupted_data_received, 'utf8');
+const restored_data = iconv.decode(data_sent, 'gbk');
+console.log(restored_data);
 
-//decode it using gbk (not work if corrption is lossy.)
-const restore_data = iconv.decode(utf8_buf, 'gbk');
-console.log(restore_data);
-
-
-//not working at thie case
 
 
