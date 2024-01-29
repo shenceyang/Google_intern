@@ -1,4 +1,15 @@
-document.addEventListener('DOMContentLoaded', function() {
+
+
+function update(){
+   //signup successful change UI
+   const container = document.querySelector('.container');
+   container.innerHTML = `
+   <div class="Homepage">
+      <h1>Home page</h1>
+   </div>`;
+}
+
+window.onload = function() {
 
     const loginBtn = document.getElementById('login-btn');
     const signupBtn = document.getElementById('signup-btn');
@@ -6,20 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
    
 
 
-    /*
+   
 
-    i dont know the cdn of crypto module so i cant use it in the client side
+
+
     
-    const crypto = require('crypto');
-    function aesEncrypt(data, key) {
-    const cipher = crypto.createCipher('aes192', key);
-    var crypted = cipher.update(data, 'utf8', 'hex');
-    crypted += cipher.final('hex');
-    return crypted;
-}
-
-
-    */
     loginBtn.addEventListener('click', function(event) {
       event.preventDefault(); // Prevent the form from submitting the default way
       const formData = new FormData(form);
@@ -50,7 +52,11 @@ document.addEventListener('DOMContentLoaded', function() {
         passwordInput.value = '';
         rememberMeCheckbox.checked = false;
 
+        update();
+
     });
+
+
   
     signupBtn.addEventListener('click', function(event) {
       event.preventDefault(); // Prevent the form from submitting the default way
@@ -69,6 +75,14 @@ document.addEventListener('DOMContentLoaded', function() {
           console.error('Signup Error:', error);
           // Handle error
         });
+
+        update();
+       
+        
+
     });
-  });
+
+
+  };
+
   
