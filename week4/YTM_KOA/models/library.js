@@ -48,6 +48,16 @@ const Library = new Schema({
     added_date: {type:Date}
 });
 
-module.exports = mongoose.model('Library', Library);
 
 
+//generate diff collections under database
+const index_collection = mongoose.model('Library', Library,"index");
+
+//create user private library collection
+function createUserLibraryLibraryModel(uid) {
+    const collectionName = `u_${uid}`;
+    return mongoose.model('Library', Library, collectionName);
+}
+ 
+
+module.exports = {index_collection, createUserLibraryLibraryModel};

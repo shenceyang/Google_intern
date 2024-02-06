@@ -21,4 +21,7 @@ const playlistSchema = new Schema({
         order: Number,
       });
       
-module.exports = mongoose.model('Playlist', playlistSchema);
+const index_Playlist = mongoose.model('Playlist', playlistSchema, 'index');
+const single_Playlist = mongoose.model('Playlist', playlistSchema, 'single'); 
+
+module.exports = {index_Playlist, single_Playlist};
