@@ -10,17 +10,41 @@ app.use(async ctx => {
 const username = 'test';
 const password = 'test123';
 
-const dbURL = `mongodb+srv://${username}:${password}@atlascluster.1k4mtwp.mongodb.net`;
+const clusterURL = `mongodb+srv://${username}:${password}@atlascluster.1k4mtwp.mongodb.net`;
 
-mongoose.connect(dbURL)
+mongoose.connect(clusterURL)
 .then(() => {
-    console.log('connected to db');
-    app.listen(3000, () => {
-        console.log('Server running on http://localhost:3000');})
-
-    }
+    console.log('connected to cluster');
+   }
 ).catch((err) => {
     console.log(err)
+})
+
+
+
+const index_collection = require("../YTM_KOA/models/library.js");
+
+test = {
+    track_id: '1234567890abcdeg',
+    title: 'test',
+    artist: ['travis scott'],
+    album: 'Unknown Album',
+    album_id: '1234567890abcdef',
+    genre: 'rap',
+    copyright: 'Not Available',
+    length: '3 min',
+    track_number: 0,
+    quality: 'STD',
+    file: 'path/to/file'
+}   
+
+   
+
+const TEST_DB  = new index_collection(test);
+TEST_DB.save().then(() => {
+    console.log('test data saved');
+}).catch((err) => {
+    console.log(err);
 })
 
 
@@ -61,32 +85,10 @@ const files_info = [
     }   
 ]
 
-test = {
-    track_id: '1234567890abcdeg',
-    title: 'test',
-    artist: ['travis scott'],
-    album: 'Unknown Album',
-    album_id: '1234567890abcdef',
-    genre: 'rap',
-    copyright: 'Not Available',
-    length: '3 min',
-    track_number: 0,
-    quality: 'STD',
-    file: 'path/to/file'
-}   
-
-const Librarydb = require("../YTM_KOA/models/library.js");      
-
-const TEST_DB  = new Librarydb.index_collection(test);
-TEST_DB.save().then(() => {
-    console.log('test data saved');
-}).catch((err) => {
-    console.log(err);
-})
 
 /*
 BUG: the api doesnt work, i try to send http request using postman, but there's no response
-*/
+
 
 router.post('/libraryBuild', async (ctx) => {
     try{
@@ -110,3 +112,8 @@ router.post('/libraryBuild', async (ctx) => {
 });
 
 
+*/
+
+
+app.listen(3000, () => {
+    console.log('Server running on http://localhost:3000');});

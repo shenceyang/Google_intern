@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const Library = new Schema({
+const LibrarySchema = new Schema({
 
     //index collection
     track_id: {
@@ -49,10 +49,10 @@ const Library = new Schema({
 });
 
 
+/*
 
 //generate diff collections under database
-const index_collection = mongoose.model('Library', Library,"index");
-
+≈
 //create user private library collection
 function createUserLibraryLibraryModel(uid) {
     const collectionName = `u_${uid}`;
@@ -61,3 +61,9 @@ function createUserLibraryLibraryModel(uid) {
  
 
 module.exports = {index_collection, createUserLibraryLibraryModel};
+
+*/
+
+const LibraryDB = mongoose.connection.useDb('Library');
+const Library = LibraryDB.model('Library', LibrarySchema, "index");
+module.exports = Library;
