@@ -6,4 +6,7 @@ const historySchema = new Schema({
     details: {},
 });
 
-module.exports = mongoose.model('History', historySchema);
+
+const HistoryDB = mongoose.connection.useDb('History');    //connect to the db
+
+module.exports = HistoryDB.model('History', historySchema);

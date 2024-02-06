@@ -21,7 +21,9 @@ const playlistSchema = new Schema({
         order: Number,
       });
       
-const index_Playlist = mongoose.model('Playlist', playlistSchema, 'index');
-const single_Playlist = mongoose.model('Playlist', playlistSchema, 'single'); 
+const PlaylisyDB = mongoose.connection.useDb('PlayList');    //connect to the db
 
-module.exports = {index_Playlist, single_Playlist};
+const index_Playlist_collection = PlaylisyDB.model('Playlist', playlistSchema, 'index');   // store under specific collection
+const single_Playlist_collection = PlaylisyDB.model('Playlist', playlistSchema, 'single'); 
+
+module.exports = {index_Playlist_collection, single_Playlist_collection};

@@ -49,21 +49,13 @@ const LibrarySchema = new Schema({
 });
 
 
-/*
-
-//generate diff collections under database
-≈
-//create user private library collection
-function createUserLibraryLibraryModel(uid) {
-    const collectionName = `u_${uid}`;
-    return mongoose.model('Library', Library, collectionName);
-}
- 
-
-module.exports = {index_collection, createUserLibraryLibraryModel};
-
-*/
 
 const LibraryDB = mongoose.connection.useDb('Library');
-const Library = LibraryDB.model('Library', LibrarySchema, "index");
-module.exports = Library;
+
+function createUserLibraryLibraryModel(uid) {
+    const collectionName = `u_${uid}`;
+    return LibraryDB.model('Library', LibrarySchema, collectionName);
+}
+ 
+const index_collection = LibraryDB.model('Library', LibrarySchema, "index");
+module.exports = {index_collection, createUserLibraryLibraryModel};

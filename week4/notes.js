@@ -32,4 +32,9 @@
     and takes time to find the server file if we are using 'nodemon', so instead we do 'npm run start'.
 */
 
+const { db } = require("./YTM_KOA/models/history")
 
+
+
+
+//!!!YTM_KOA: multiple db, different collections. set all in models.

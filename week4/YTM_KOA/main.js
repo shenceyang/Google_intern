@@ -1,9 +1,6 @@
 const Koa = require('koa');
 const app = new Koa();
 const mongoose = require('mongoose');
-app.use(async ctx => {
-  ctx.body = 'Hello World';
-});
 
 
 
@@ -22,37 +19,11 @@ mongoose.connect(clusterURL)
 
 
 
-const index_collection = require("../YTM_KOA/models/library.js");
-
-test = {
-    track_id: '1234567890abcdeg',
-    title: 'test',
-    artist: ['travis scott'],
-    album: 'Unknown Album',
-    album_id: '1234567890abcdef',
-    genre: 'rap',
-    copyright: 'Not Available',
-    length: '3 min',
-    track_number: 0,
-    quality: 'STD',
-    file: 'path/to/file'
-}   
-
-   
-
-const TEST_DB  = new index_collection(test);
-TEST_DB.save().then(() => {
-    console.log('test data saved');
-}).catch((err) => {
-    console.log(err);
-})
-
-
-
-  
-
                                                             //store library data into the database
-const Router = require('@koa/router');
+
+
+const Library = require("../YTM_KOA/models/library.js");
+const Router = require('koa-router');
 const router = new Router();
 
 //since the music-metadata library is not available, i will hardcode the medata
@@ -86,16 +57,13 @@ const files_info = [
 ]
 
 
-/*
-BUG: the api doesnt work, i try to send http request using postman, but there's no response
-
 
 router.post('/libraryBuild', async (ctx) => {
     try{
         console.log('Building Library');
         //store into mongoDB index collection of Library database
         for (const file of files_info){
-            const newTrack = new Librarydb.index_collection(file);   //defined before
+            const newTrack = new  Library.index_collection(file);  //defined before
             await newTrack.save();
         }
 
@@ -111,9 +79,23 @@ router.post('/libraryBuild', async (ctx) => {
     }
 });
 
+router.get('/library', async (ctx) => {
+    try{
+        console.log('Fetching Library');
+        const library = await Library.index_collection.find();
+        ctx.status = 200;
+        ctx.body = {
+            status: 'success',
+            data: library
+        }
+        return ctx;
 
-*/
+    }catch(err){
+        console.log(err);
+    }
+});
 
+app.use(router.routes());
 
 app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');});
