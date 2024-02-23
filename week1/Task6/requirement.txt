@@ -1,3 +1,0 @@
-Task6:
-Create a non-blocking function that attempts to read a json file and print it directly, or 
-prints a failure message on failure.

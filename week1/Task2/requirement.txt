@@ -1,3 +1,0 @@
-Task 2
-Wrap multiple simple functions with module.export and see how the different functions are referenced separately 
-in another js file.

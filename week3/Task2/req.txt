@@ -1,1 +1,0 @@
-On the basis of the fileserver above, access http://localhost:port/play to get a stream of MP3 files(ps:The MP3 stream uploaded to the browser above)
