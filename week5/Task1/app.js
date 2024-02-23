@@ -15,9 +15,14 @@ router.get('/stream/:trackId', async (ctx, next) => {
   ctx.path = filePath;
 
   await koaMedia({
-    extMatch: /\.mp[3-4]$/i
+    root: filePath
   })(ctx); // Invoke the middleware manually with ctx
+
+  console.log('ctx');
+  console.log(ctx);
   
+
+  await next();
 
   //stream the mp3 file at filepath with the koaMedia Middleware
 });

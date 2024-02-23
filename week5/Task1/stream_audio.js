@@ -26,6 +26,8 @@ let getContentType = (type) => {
 //read file
 let readFile = async (ctx, options) => {
 
+    console.log('reading file')
+    console.log("option in readfile", options)
     //get range from header
     let match = ctx.request.header['range'];
     console.log('match', match);
@@ -109,15 +111,12 @@ module.exports = function (opts){
     //combine default settings with any options passed into the module when it's required
     let options = Object.assign({
         extMatch:['.mp4', '.flv', '.webm', '.ogv', '.mpg', '.wav', '.ogg'],
-        root: path.join(__dirname, 'media'),
     }, opts);
 
 
-    console.log("options", options)
-
 
     return async (ctx,next) => {
-        console.log("ctx path is" +ctx.path)
+    
         //get file extname
         let ext = path.extname(ctx.path).toLocaleLowerCase();
 
@@ -125,24 +124,23 @@ module.exports = function (opts){
         let isMatchArr = options.extMatch instanceof Array && options.extMatch.indexOf(ext) > -1
         let isMatchReg = options.extMatch instanceof RegExp && options.extMatch.test(ctx.path)
 
-        console.log(options.extMatch instanceof RegExp)
-        console.log (options.extMatch.test(ctx.path))
-        console.log("isMatchArr", isMatchArr)
-        console.log("isMatchReg", isMatchReg)
      
         if (isMatchArr || isMatchReg) {
             console.log("here")
-
+            console.log(ctx)
+          
+            
             if (ctx.request.header && ctx.request.header['range']) {
+                console.log(ctx)
                 console.log(options)
 
                 return await readFile(ctx, options)
                 
-            //}
-        } 
-        //await next()
+            
+            } 
         
-    }
+        }
+        //await next()
 
     }
 }
