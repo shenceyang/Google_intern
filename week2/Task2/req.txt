@@ -1,0 +1,1 @@
+Try to read a WAV file asynchronously and load it into Buffer.

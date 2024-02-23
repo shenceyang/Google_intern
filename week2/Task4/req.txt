@@ -1,0 +1,6 @@
+Task 4
+Inherits enables objects to be developed in the class-based form familiar to Java users.
+
+Try to practice building a "class-based" music playlist structure in the form of inherits with 
+    add(track, position) 
+    remove(track) methods.
