@@ -27,10 +27,8 @@ let getContentType = (type) => {
 let readFile = async (ctx, options) => {
 
     //get range from header
-    let range = ctx.request.header['range'];
-    if (!range) {
-        ctx.throw(416, 'Range header is missing');
-    }
+    let match = ctx.request.header['range'];
+    console.log('match', match);
 
     //file extension
     let ext = path.extname(ctx.path).toLowerCase().slice(1);
@@ -44,13 +42,8 @@ let readFile = async (ctx, options) => {
     //synchronously get the statistics of the file at the path 
     let stats = fs.statSync(diskPath);
 
-    console.log('stats', stats);
-    //parse the start and end position of the file
     let start = Number.parseInt(bytes.split('-')[0]) 
     let end   = Number.parseInt(bytes.split('-')[1]) || (stats.size - 1)
-    if (start >= stats.size || end >= stats.size) {
-        ctx.throw(416, 'Range not satisfiable');
-    }
 
     if (stats.isFile()){
         return new Promise((resolve, reject) => {
@@ -112,16 +105,19 @@ let readFile = async (ctx, options) => {
 
 module.exports = function (opts){
 
-    console.log('opts', opts);
+
     //combine default settings with any options passed into the module when it's required
     let options = Object.assign({
         extMatch:['.mp4', '.flv', '.webm', '.ogv', '.mpg', '.wav', '.ogg'],
-        root: process.cwd()
+        root: path.join(__dirname, 'media'),
     }, opts);
 
 
-    return async (ctx,next) => {
+    console.log("options", options)
 
+
+    return async (ctx,next) => {
+        console.log("ctx path is" +ctx.path)
         //get file extname
         let ext = path.extname(ctx.path).toLocaleLowerCase();
 
@@ -129,21 +125,24 @@ module.exports = function (opts){
         let isMatchArr = options.extMatch instanceof Array && options.extMatch.indexOf(ext) > -1
         let isMatchReg = options.extMatch instanceof RegExp && options.extMatch.test(ctx.path)
 
+        console.log(options.extMatch instanceof RegExp)
+        console.log (options.extMatch.test(ctx.path))
+        console.log("isMatchArr", isMatchArr)
+        console.log("isMatchReg", isMatchReg)
+     
         if (isMatchArr || isMatchReg) {
+            console.log("here")
 
-        
-            console.log(ctx.request.header['range']);
-
-
-            //if (ctx.request.header && ctx.request.header['range']) {
-                //If the requested file's extension matches and there's a Range header in the request 
+            if (ctx.request.header && ctx.request.header['range']) {
+                console.log(options)
 
                 return await readFile(ctx, options)
                 
             //}
         } 
-        await next()
+        //await next()
         
     }
 
+    }
 }

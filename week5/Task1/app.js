@@ -1,28 +1,25 @@
 const Koa = require('koa');
 const path = require('path');
 const Router = require('koa-router');
-const mediaMiddleware = require('../Task1/stream_audio.js');
-
+const koaMedia = require('../Task1/stream_audio.js');
 const app = new Koa();
 const router = new Router();
-
-// Middleware to serve mp3 files
-const serveMP3 = mediaMiddleware({
-  extMatch: /\.mp3$/i,
-  root: path.join(__dirname, 'media','test.mp3')
-});
 
 
 router.get('/stream/:trackId', async (ctx, next) => {
 
   const trackId = ctx.params.trackId;
-  console.log(`Streaming track ${trackId}`);
+  const filePath = path.join(__dirname, 'media', `${trackId}.mp4`);
+  console.log(filePath);
 
-  // The request path is set to the track ID, required by the serveMP3 middleware
-  ctx.path = trackId;
+  ctx.path = filePath;
+
+  await koaMedia({
+    extMatch: /\.mp[3-4]$/i
+  })(ctx); // Invoke the middleware manually with ctx
   
-  await serveMP3(ctx, next);
-  console.log('Finished streaming track');
+
+  //stream the mp3 file at filepath with the koaMedia Middleware
 });
 
 // Use the routes defined in the router
