@@ -1,4 +1,5 @@
-import crypto from 'crypto'
+const crypto = require('crypto')
+
 function aesEncrypt(data, key) {
     const cipher = crypto.createCipher('aes-128-ecb', key)
     let encrypted = cipher.update(data, 'utf-8', 'hex');
@@ -15,4 +16,4 @@ function aesDecrypt(encrypted, key) {
 
 const key = 'JustATestKeyHere'
 
-export {aesEncrypt, aesDecrypt, key}
+module.exports= {aesEncrypt, aesDecrypt, key}
