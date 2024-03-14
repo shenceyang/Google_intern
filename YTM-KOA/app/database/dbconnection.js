@@ -18,17 +18,19 @@ const trackSchema = new Schema({
     fileName: String,
 },
 {collection: 'indexes'});
-const track = libraryDB.model('Index', trackSchema);
+const Track = libraryDB.model('Index', trackSchema);
 
 async function writeTrackIndex(trackInfo) {
-    const trackDocument = new track(trackInfo);
+    const trackDocument = new Track(trackInfo);
+
     await trackDocument.save().catch(err => {
+        console.log("failed to save track info to db")
         console.error(err)
     })
 }
 
 async function readTrackIndex() {
-    const indexData = await track.find().then((data) => {
+    const indexData = await Track.find().then((data) => {
         return data
     })
    

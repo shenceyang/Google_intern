@@ -2,9 +2,11 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
-const { isMainThread, parentPort, Worker, workerData } = require('worker-threads');
+const { isMainThread, parentPort, Worker, workerData } = require('worker_threads');
+const {parseFile} = require('music-metadata');
 const sharp = require('sharp');
-const { readTrackIndex } = require('./dbconnection');
+const { readTrackIndex,writeTrackIndex } = require('./dbconnection');
+
 
 
 
@@ -82,6 +84,7 @@ if (!isMainThread) {
 
 // use paralell processing to run indexCreate function to every musicfile in the path
 async function libraryInit(Path){
+
     if (isMainThread) {
         //main thread: create worker threads and send file paths to worker threads to let them run indexCreate function
 
@@ -89,7 +92,7 @@ async function libraryInit(Path){
         const musicFiles = files.filter(file => file.endsWith('.mp3') || file.endsWith('.flac') || file.endsWith('.m4a') || file.endsWith('.wav'))
 
         const workers = []
-        
+
        //create worker threads
         for (let i = 0; i < LIMIT; i++) {
 
@@ -110,15 +113,12 @@ async function libraryInit(Path){
             */
             worker.on('message', () => {
                 if (musicFiles.length > 0) {
-                    worker.postMessage(path.join(dirPath, musicFiles.pop()))
+                    worker.postMessage(path.join(Path, musicFiles.pop()))
                 } else {
                     worker.terminate()
                     workers.pop()
                 }
             })
-
-
-            // send the first message(task) to worker after setting up listener and worker
             worker.postMessage(path.join(Path, musicFiles.pop()))
         }
     }
@@ -130,7 +130,7 @@ async function libraryInit(Path){
             -> set up a message event listener to process the musicFileafter receiving the message(filePath) from main thread.
         */
 
-        parentPort.on('message', async (filePath) => {
+        parentPort.on('message', async filePath => {
             //store track info to db
             await indexCreate(filePath)
 
@@ -147,7 +147,15 @@ async function libraryInit(Path){
 
 async function libraryLoad(){
     const files = await readTrackIndex()
-
+    const indexObj = Object.fromEntries(files.map(item => [item.track_id, item]))
+    return indexObj
 }
 
-module.exports= {libraryInit}
+
+
+
+
+
+
+
+module.exports= {libraryInit,libraryLoad}

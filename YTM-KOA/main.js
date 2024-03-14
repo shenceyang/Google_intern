@@ -6,13 +6,21 @@ const bodyParser = require('koa-bodyparser');
 const cors = require('@koa/cors');
 const path = require('path');
 const {readTrackIndex} = require('./app/database/dbconnection.js');
+const {libraryInit} = require('./app/database/library.js');
 
-connectCluster();
 
 
-//if there's nothing in the Librarydb, Init by load the music files in localStorage. otherwise load the files in db
-const localStorage = path.join(__dirname, 'local_storage');
 
+const localStorage = path.join(__dirname, 'local_storage'); 
+(async () => {
+    await connectCluster();
+    if ((await readTrackIndex()).length !== 0) {
+      //update 
+      console.log('already initialized')
+    } else {
+      await libraryInit(localStorage)
+    }
+})();
 
 
 
