@@ -1,0 +1,6 @@
+1. npm install -g vue/cli
+2. vue create my-project (choose default vue3)
+3. cd my-project
+
+ npm install vue-router@next
+ create router.js
