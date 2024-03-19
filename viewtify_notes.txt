@@ -1,6 +1,10 @@
 1. npm install -g vue/cli
 2. vue create my-project (choose default vue3)
 3. cd my-project
+4.npm install vue-router@next
 
- npm install vue-router@next
- create router.js
+-Set up router for page
+1. create router.js
+2. create pages
+3. add router in main.js
+4. add  <router-view></router-view> in App.vue
