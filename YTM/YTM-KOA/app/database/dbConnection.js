@@ -22,7 +22,7 @@ const Track = libraryDB.model('Index', trackSchema);
 
 async function writeTrackIndex(trackInfo) {
     const trackDocument = new Track(trackInfo);
-
+    //console.log(trackDocument)
     await trackDocument.save().catch(err => {
         console.log("failed to save track info to db")
         console.error(err)
@@ -38,7 +38,7 @@ async function readTrackIndex() {
 }
 
 async function deleteTrackIndex(track_id) {
-    await track.deleteOne({track_id})
+    await Track.deleteOne({track_id})
 }
 
 

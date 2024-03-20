@@ -1,7 +1,6 @@
 <template>
     <div class="row">
             <div class = "container">
-              
 
                 <form>
                     <div>
@@ -28,7 +27,7 @@
                     </div>
                     
                     <div class="my-3">
-                        <button onclick="submit()" type = "submit" class="btn btn-primary">Login</button>
+                        <button @click="submit" type = "submit" class="btn btn-primary">Login</button>
                     </div>
                 </form>
             </div>
@@ -37,7 +36,7 @@
     </div>
 </template>
 
-<style scoped>
+<style >
 .container {
     display: flex;
     align-items: center;
@@ -75,5 +74,37 @@ button {
 </style>
 
 <script>
-export default{};
+import axios from 'axios';
+
+export default{
+
+    data() {
+        return {
+            credentials: {
+                username: '',
+                password: '',
+                remember: false
+            }
+        };
+    },
+
+    methods:{
+        submit(){
+            console.log(this.credentials);
+            axios.post('http://localhost:3000/login', this.credentials)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        }
+
+
+    }
+
+
+
+};
+
 </script>

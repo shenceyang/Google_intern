@@ -8,7 +8,11 @@ const sharp = require('sharp');
 const { readTrackIndex,writeTrackIndex } = require('./dbconnection');
 
 
-
+/*
+//mongodb only allow single thread for write operation, so we need to use async-mutex to lock the write operation 
+const { Mutex } = require('async-mutex');
+const mutex = new Mutex();
+*/
 
 //helper function in trackInfo
 function formatDuration(duration) {
@@ -50,13 +54,44 @@ async function trackInfo(filePath) {
 }
 
 
+/*
+//avoid conflicts between multiple threads writing to the same file
+async function safeWriteTrackIndex(track) {
+    const release = await mutex.acquire();
+    try {
+      await writeTrackIndex(track);
+    } finally {
+      release();
+    }
+  }
+  */
+
 //store track info to db
 async function indexCreate(filePath) {
     const {track, picture} = await trackInfo(filePath)
 
-    //save track info to db
-    await writeTrackIndex(track)
+    //console.log(track)
 
+    //save track info to db
+    //await safeWriteTrackIndex(track)
+
+    const test = {
+        track_id: 'b09fc431ba78e240',
+        title: 'Kanye',
+        artist: [ 'The Chainsmokers' ],
+        album: 'Kanye',
+        album_id: '3f8c0316bb7a001f',
+        genre: '',
+        copyright: '',
+        length: '03:40',
+        track_number: 1,
+        quality: 'STD',
+        file: '/Users/yangshence/Desktop/Google_intern/YTM/YTM-KOA/local_storage/Kanye.Created.With.Ytmdl.mp3',
+        fileName: 'kanye.created.with.ytmdl.mp3',
+      }
+
+    await writeTrackIndex(test)
+    /*
     //save album cover to library/cover
     if (picture) {
         const imageData = picture.data
@@ -66,6 +101,7 @@ async function indexCreate(filePath) {
         .toFile(`./library/cover/${track.album_id}.jpg`)
         console.log(`Album cover for ${track.album} saved`)
     }
+    */
 }
 
 
@@ -90,7 +126,7 @@ async function libraryInit(Path){
 
         const files = fs.readdirSync(Path)
         const musicFiles = files.filter(file => file.endsWith('.mp3') || file.endsWith('.flac') || file.endsWith('.m4a') || file.endsWith('.wav'))
-
+        console.log(`Found ${musicFiles.length} music files`)
         const workers = []
 
        //create worker threads
@@ -112,11 +148,15 @@ async function libraryInit(Path){
                       run call back function to put next file into message and pass it to worker thread. 
             */
             worker.on('message', () => {
+                console.log("here music file length is " + musicFiles.length)
                 if (musicFiles.length > 0) {
                     worker.postMessage(path.join(Path, musicFiles.pop()))
+                  
                 } else {
+                    console.log('All music files processed')
                     worker.terminate()
                     workers.pop()
+                    console.log('hey')
                 }
             })
             worker.postMessage(path.join(Path, musicFiles.pop()))

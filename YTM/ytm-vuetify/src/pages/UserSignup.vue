@@ -37,7 +37,7 @@
     </div>
 </template>
 
-<style scoped>
+<style >
 .container {
     display: flex;
     align-items: center;
