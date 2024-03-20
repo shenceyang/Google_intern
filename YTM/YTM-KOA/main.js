@@ -41,7 +41,7 @@ console.log('writing track index');
 
 const localStorage = path.join(__dirname, 'local_storage'); 
 (async () => {
-    await connectCluster();
+    //await connectCluster();
     if ((await readTrackIndex()).length !== 0) {
       //update 
       console.log('already initialized')
