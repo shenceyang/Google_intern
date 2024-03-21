@@ -6,52 +6,45 @@ const koaMedia = require("./core/stream_audio.js");
 const login = require('./core/auth.js').login;
 const signup = require('./core/auth.js').signup;
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
-router.get('/', async ctx => {
-    ctx.body = 'Hello World'
-})
+const jwtSecret = 'YTM';
 
+//jwt auth middleware
+const jwtAuth = async (ctx, next) => {
+  const token = ctx.cookies.get('auth_token');
+  if (token) {
+      try {
+          ctx.state.user = jwt.verify(token, jwtSecret);
+          await next();
+      } catch (err) {
+          ctx.status = 401;
+          ctx.body = 'Unauthorized: invalid token';
+      }
+  } else {
+      ctx.status = 401;
+      ctx.body = 'Unauthorized: no token provided';
+  }
+}
 
-
-router.get('/stream/:trackId', async (ctx, next) => {
-
-  const trackId = ctx.params.trackId;
-  const filePath = path.join(__dirname, '..','library', 'media',`${trackId}.mp4`);
-  console.log(filePath);
-  ctx.path = filePath;
-  ctx.request.header['range'] = 'bytes=0-';
-
-  await koaMedia({
-    extMatch: /\.mp[3-4]$/i,
-  })(ctx); 
-
-  await next();
-
-});
-
-
-router.get('/login', async ctx => {
-  // return the html file
-  ctx.type = 'html'
-  ctx.body = fs.createReadStream('./app/views/login.html')
-}).post('/login', async ctx => {
+router.post('/login', async ctx => {
+ 
   await login(ctx.request.body.username, ctx.request.body.password).then((result) => {
       if (result) {
+          //set cookie
+          const token = jwt.sign({username: ctx.request.body.username}, jwtSecret, {expiresIn: '1h'})
+          ctx.cookies.set('auth_token', token, {httpOnly: true, maxAge: 60 * 60 * 1000})
           ctx.type = 'json'
           ctx.body = JSON.stringify({status: 0, msg: 'Login Success'})
       } else {
           ctx.type = 'json'
-          ctx.body = JSON.stringify({status: 1, msg: 'Username or Password error'})
+          ctx.body = JSON.stringify({status: 1, msg: 'Username or Password incorrect'})
       }
   })
 })
 
 
-router.get('/signup', async ctx => {
-  ctx.type = 'html'
-  ctx.body = fs.createReadStream('./app/views/signup.html')
-}).post('/signup', async ctx => {
-  console.log(ctx.request.body.username, ctx.request.body.password)
+router.post('/signup', async ctx => {
 
   await signup(ctx.request.body.username, ctx.request.body.password).then((result) => {
       //console.log(result)
@@ -67,6 +60,30 @@ router.get('/signup', async ctx => {
   })
 })
 
+
+
+// getUser route
+router.get('/getuser', jwtAuth, async (ctx) => {
+  // Extract the username from the state.user, which was set by the jwtAuth middleware
+  const { username } = ctx.state.user;
+  ctx.body = { username };
+});
+
+
+router.get('/stream/:trackId', async (ctx, next) => {
+  const trackId = ctx.params.trackId;
+  const filePath = path.join(__dirname, '..','library', 'media',`${trackId}.mp4`);
+  console.log(filePath);
+  ctx.path = filePath;
+  ctx.request.header['range'] = 'bytes=0-';
+
+  await koaMedia({
+    extMatch: /\.mp[3-4]$/i,
+  })(ctx); 
+
+  await next();
+
+});
 
 
 module.exports =  router

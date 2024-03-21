@@ -3,7 +3,7 @@
             <div class = "container">
               
 
-                <form>
+                <form @submit="signupSubmit">
                     <div>
                         <h3> Sign up </h3>
                         <hr />
@@ -12,23 +12,23 @@
                     
                    <div class="form-group">
                         <label> Username</label>
-                        <input type = "text" class="form-control" placeholder="Username" id="username" />
+                        <input type = "text" class="form-control" v-model="user_name" placeholder="Username" id="username" />
                    </div>
 
                     <div class="form-group">
                         <label> Password</label>
-                        <input type = "password" class="form-control" placeholder="Password" id="password" />
+                        <input type = "password" class="form-control" v-model="password" placeholder="Password" id="password" />
                     </div>
 
                     <div class="form-group">
                         <label>
-                            <input type="checkbox" id="remember">
+                            <input type="checkbox" id="remember" v-model="remember_me">
                             remember me
                         </label>
                     </div>
                     
                     <div class="my-3">
-                        <button onclick="submit()" type = "submit" class="btn btn-primary">Login</button>
+                        <button type = "submit" class="btn btn-primary">Login</button>
                     </div>
                 </form>
             </div>
@@ -74,6 +74,41 @@ button {
 
 </style>
 
+
 <script>
-export default{};
+import axios from 'axios';
+
+export default{
+
+
+    methods:{
+        
+        signupSubmit(e){
+            ///use e.preventDefault to prevent refreshing 
+            e.preventDefault();
+            const data = {
+                username: this.user_name,
+                password: this.password,
+                remember: this.remember_me
+            }
+
+            axios.post('http://localhost:3000/signup', data)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
+
+            this.$router.push('/login');
+
+            
+            
+        }
+
+    }
+
+};
+
 </script>

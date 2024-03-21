@@ -2,7 +2,7 @@
     <div class="row">
             <div class = "container">
 
-                <form>
+                <form @submit.prevent="loginSubmit">
                     <div>
                         <h3> Login </h3>
                         <hr />
@@ -11,23 +11,23 @@
                     
                    <div class="form-group">
                         <label> Username</label>
-                        <input type = "text" class="form-control" placeholder="Username" id="username" />
+                        <input type = "text" class="form-control" v-model="user_name" placeholder="Username"  id="username" />
                    </div>
 
                     <div class="form-group">
                         <label> Password</label>
-                        <input type = "password" class="form-control" placeholder="Password" id="password" />
+                        <input type = "password" class="form-control" v-model="password" placeholder="Password" id="password" />
                     </div>
 
                     <div class="form-group">
                         <label>
-                            <input type="checkbox" id="remember">
+                            <input type="checkbox" id="remember" v-model="remember_me">
                             remember me
                         </label>
                     </div>
                     
                     <div class="my-3">
-                        <button @click="submit" type = "submit" class="btn btn-primary">Login</button>
+                        <button type = "submit" class="btn btn-primary">Login</button>
                     </div>
                 </form>
             </div>
@@ -76,28 +76,29 @@ button {
 <script>
 import axios from 'axios';
 
+
 export default{
 
-    data() {
-        return {
-            credentials: {
-                username: '',
-                password: '',
-                remember: false
-            }
-        };
-    },
-
     methods:{
-        submit(){
-            console.log(this.credentials);
-            axios.post('http://localhost:3000/login', this.credentials)
+        
+        loginSubmit(){
+         
+            const data = {
+                username: this.user_name,
+                password: this.password,
+                remember: this.remember_me || false
+            }
+
+            console.log(data);
+        
+            axios.post('http://localhost:3000/login', data)
             .then(response => {
                 console.log(response);
             })
             .catch(error => {
                 console.log(error);
             });
+            
         }
 
 
