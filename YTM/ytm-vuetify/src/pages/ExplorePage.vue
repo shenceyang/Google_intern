@@ -21,12 +21,11 @@
     methods: {
       async fetchUser() {
         try {
-          // Update the URL to match your API endpoint
-          const response = await axios.get('http://localhost:3000/getuser');
+          // set cookie from client side to server side to pass jwtauth
+          const response = await axios.get('http://localhost:3000/getuser', { withCredentials: true });
           this.username = response.data.username;
         } catch (error) {
           console.error('There was an error fetching the user data:', error);
-          // Handle error (e.g., redirect to login page or display a message)
         }
       }
     }

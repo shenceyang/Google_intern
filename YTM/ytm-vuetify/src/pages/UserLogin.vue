@@ -89,11 +89,12 @@ export default{
                 remember: this.remember_me || false
             }
 
-            console.log(data);
-        
-            axios.post('http://localhost:3000/login', data)
+            //need to add {withCredentials: true} to send cookies
+            axios.post('http://localhost:3000/login', data,{ withCredentials: true })
             .then(response => {
                 console.log(response);
+                this.$router.push('/explore');
+
             })
             .catch(error => {
                 console.log(error);
@@ -101,10 +102,7 @@ export default{
             
         }
 
-
     }
-
-
 
 };
 

@@ -9,35 +9,6 @@ const {readTrackIndex,writeTrackIndex} = require('./app/database/dbconnection.js
 const {libraryInit} = require('./app/database/library.js');
 
 
-/*
-connectCluster();
-
-const track = {
-  track_id: '4b054b40aa48e992',
-  title: '',
-  artist: '',
-  album: '',
-  album_id: '5e543256c480ac57',
-  genre: '',
-  copyright: '',
-  length: '05:01',
-  track_number: 0,
-  quality: 'STD',
-  file: '/Users/yangshence/Desktop/Google_intern/YTM/YTM-KOA/local_storage/周杰倫 Jay Chou【一路向北 All the Way North】-Official Music Video (320 kbps).mp3',
-  fileName: '周杰倫 jay chou【一路向北 all the way north】-official music video (320 kbps).mp3'
-}
-
-console.log('writing track index');
-
-(async () => {
-  await writeTrackIndex(track);
-  const data = await readTrackIndex();
-  console.log(data);
-}
-)();
-*/
-
-
 
 const localStorage = path.join(__dirname, 'local_storage'); 
 (async () => {
@@ -52,8 +23,16 @@ const localStorage = path.join(__dirname, 'local_storage');
 
 
 
+app.use(cors({
+  origin: 'http://localhost:8080', // Use your frontend domain
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // Essential for cookies to be sent and received
+}));
+
+
 app.use(bodyParser());
-app.use(cors());
+
 app.use(router.routes()).use(router.allowedMethods())
 
 const PORT = 3000;

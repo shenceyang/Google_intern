@@ -7,6 +7,9 @@ const login = require('./core/auth.js').login;
 const signup = require('./core/auth.js').signup;
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const {readTrackIndex} = require('./database/dbconnection.js');
+
+
 
 const jwtSecret = 'YTM';
 
@@ -17,6 +20,7 @@ const jwtAuth = async (ctx, next) => {
       try {
           ctx.state.user = jwt.verify(token, jwtSecret);
           await next();
+          
       } catch (err) {
           ctx.status = 401;
           ctx.body = 'Unauthorized: invalid token';
@@ -28,14 +32,13 @@ const jwtAuth = async (ctx, next) => {
 }
 
 router.post('/login', async ctx => {
- 
   await login(ctx.request.body.username, ctx.request.body.password).then((result) => {
       if (result) {
           //set cookie
           const token = jwt.sign({username: ctx.request.body.username}, jwtSecret, {expiresIn: '1h'})
           ctx.cookies.set('auth_token', token, {httpOnly: true, maxAge: 60 * 60 * 1000})
           ctx.type = 'json'
-          ctx.body = JSON.stringify({status: 0, msg: 'Login Success'})
+          ctx.body = JSON.stringify({status: 0, msg: 'Login Success', token: token})
       } else {
           ctx.type = 'json'
           ctx.body = JSON.stringify({status: 1, msg: 'Username or Password incorrect'})
@@ -47,9 +50,7 @@ router.post('/login', async ctx => {
 router.post('/signup', async ctx => {
 
   await signup(ctx.request.body.username, ctx.request.body.password).then((result) => {
-      //console.log(result)
-      console.log(ctx.request.body.username, ctx.request.body.password)
-
+     
       if (result) {
           ctx.type = 'json'
           ctx.body = JSON.stringify({status: 0, msg: 'Signup Success'})
@@ -85,5 +86,14 @@ router.get('/stream/:trackId', async (ctx, next) => {
 
 });
 
+
+
+//explore:get all music file in the library
+router.get('/explore', jwtAuth, async (ctx, next) => {
+  const trackIndex = await readTrackIndex();
+  ctx.type = 'json';
+  ctx.body = JSON.stringify(trackIndex);
+  await next();
+});
 
 module.exports =  router
