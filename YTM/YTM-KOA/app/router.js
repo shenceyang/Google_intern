@@ -7,7 +7,7 @@ const login = require('./core/auth.js').login;
 const signup = require('./core/auth.js').signup;
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const {readTrackIndex} = require('./database/dbconnection.js');
+const {readTrackIndex,readPlaylistByPid} = require('./database/dbconnection.js');
 
 
 
@@ -95,5 +95,49 @@ router.get('/explore', jwtAuth, async (ctx, next) => {
   ctx.body = JSON.stringify(trackIndex);
   await next();
 });
+
+
+
+router.get('/playlist/:pid', async (ctx) => {
+  const pid = ctx.params.pid;
+  try {
+      const playlist = await readPlaylistByPid(pid);
+      if (playlist) {
+          ctx.status = 200;
+          ctx.body = playlist;
+      } else {
+          ctx.status = 404;
+          ctx.body = { message: 'Playlist not found' };
+      }
+  } catch (error) {
+      ctx.status = 500;
+      ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
+
+//return all tracks that has the album pid in the Track collection
+router.get('/album/:pid', jwtAuth, async (ctx) => {
+  const albumName = ctx.params.pid; // Assuming pid is the album name for hashing
+  const albumIdHash = crypto.createHash('md5').update(albumName).digest('hex').substring(0, 16);
+  
+  try {
+      const tracks = await readTrackIndex();
+      const filteredTracks = tracks.filter(track => track.album_id === albumIdHash);
+
+      if (filteredTracks.length > 0) {
+          ctx.status = 200;
+          ctx.body = filteredTracks;
+      } else {
+          ctx.status = 404;
+          ctx.body = { message: 'No tracks found for the given album' };
+      }
+  } catch (error) {
+      ctx.status = 500;
+      ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
+
+
+
 
 module.exports =  router

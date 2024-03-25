@@ -4,7 +4,7 @@ connectCluster();
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//Library db connection
+                                        //Library db connection (tracks)
 const libraryDB = mongoose.connection.useDb('Library');
 const trackSchema = new Schema({
     track_id: String,
@@ -32,6 +32,7 @@ async function writeTrackIndex(trackInfo) {
     })
 }
 
+//return all tracks in the library
 async function readTrackIndex() {
     const indexData = await Track.find().then((data) => {
         return data
@@ -39,6 +40,7 @@ async function readTrackIndex() {
    
     return indexData
 }
+
 
 async function deleteTrackIndex(track_id) {
     await Track.deleteOne({track_id})
@@ -50,38 +52,120 @@ async function deleteTrackIndex(track_id) {
 
 
 
-//Playlists db connection
+
+                                                //Playlists db connection
 const playlistDB = mongoose.connection.useDb('Playlists');
 const playListsIndexSchema = new Schema({
-    pid: String,
-    author: String,
-    name: String,
-    description: String,
-    added: Number,
-    liked: Number,
-    shared: Number,
-    played: Number,
-    public: Boolean,
-    image: String,
-    'type': {
+    pid: {
         type: String,
-        enum: ['playlist', 'album']
+        required: true,
+        unique: true
+    },
+
+    // owner of the playlist
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Ensure this matches the name you've given your user model
+        required: true
+    },
+    
+    name: {
+        type: String,
+        required: true
+    },
+   
+    description: String,
+
+    // Tracks included in the playlist
+    tracks: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Track' // Ensure this matches the name you've given your track model
+    }],
+
+    liked: {
+        type: Number,
+        default: 0
+    },
+    shared: {
+        type: Number,
+        default: 0
+    },
+    played: {
+        type: Number,
+        default: 0
+    },
+    public: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    image: String,
+    type: {
+        type: String,
+        enum: ['playlist', 'album'],
+        default: 'playlist'
     },
     last_update: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
         required: true
     }
-}, {collection: 'indexes'});
-
-/*
-Despite both models being named 'Index', they are differentiated by the DB objects they are attached to. 
-we use the 'track' and 'playListsIndex' to create new objects but not the 'Index' model.
-*/
-
+}, { collection: 'indexes' }); 
 const playListsIndex = playlistDB.model('Index', playListsIndexSchema);
 
 
+async function readPlaylistByPid(pid) {
+    try {
+        const playlist = await playListsIndex.findOne({ pid: pid }).exec();
+        return playlist;
+    } catch (error) {
+        console.error('Error fetching playlist by PID:', error);
+        throw error; // or handle it as needed
+    }
+}
+
+async function readPlaylistsByUserId(userId) {
+    try {
+        const playlists = await playListsIndex.find({ author: userId }).exec();
+        return playlists;
+    } catch (error) {
+        console.error('Error fetching playlists by User ID:', error);
+        throw error; // or handle it as needed
+    }
+}
 
 
-module.exports = {writeTrackIndex, readTrackIndex, deleteTrackIndex}
+
+async function writePlaylist(playlistData) {
+    try {
+        const newPlaylist = new playListsIndex(playlistData);
+        await newPlaylist.save();
+        console.log('Playlist created successfully:', newPlaylist);
+        return newPlaylist;
+    } catch (error) {
+        console.error('Error creating new playlist:', error);
+        throw error; // or handle it as needed
+    }
+}
+
+async function updatePlaylistByPid(pid, updateData) {
+    try {
+        const updatedPlaylist = await playListsIndex.findOneAndUpdate({ pid: pid }, updateData, { new: true }).exec();
+        if (updatedPlaylist) {
+            console.log('Playlist updated successfully:', updatedPlaylist);
+            return updatedPlaylist;
+        } else {
+            console.log('No playlist found with the given PID');
+            return null; // or handle as needed
+        }
+    } catch (error) {
+        console.error('Error updating playlist by PID:', error);
+        throw error; // or handle it as needed
+    }
+}
+
+
+
+
+module.exports = {writeTrackIndex, readTrackIndex, deleteTrackIndex,
+                  readPlaylistByPid, readPlaylistsByUserId, writePlaylist, updatePlaylistByPid}
