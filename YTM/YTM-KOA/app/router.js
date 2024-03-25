@@ -89,7 +89,7 @@ router.get('/stream/:trackId', async (ctx, next) => {
 
 
 //explore:get all music file in the library
-router.get('/explore', jwtAuth, async (ctx, next) => {
+router.get('/explore', async (ctx, next) => {
   const trackIndex = await readTrackIndex();
   ctx.type = 'json';
   ctx.body = JSON.stringify(trackIndex);

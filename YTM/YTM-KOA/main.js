@@ -5,6 +5,9 @@ const connectCluster = require('./app/database/clusterConnection.js')
 const bodyParser = require('koa-bodyparser');
 const cors = require('@koa/cors');
 const path = require('path');
+const mount = require('koa-mount');
+const serve = require('koa-static');
+
 const {readTrackIndex,writeTrackIndex} = require('./app/database/dbconnection.js');
 const {libraryInit} = require('./app/database/library.js');
 
@@ -30,10 +33,15 @@ app.use(cors({
   credentials: true // Essential for cookies to be sent and received
 }));
 
+// Serve static files from the library/cover directory under the /cover path
+app.use(mount('/cover', serve(path.join(__dirname, 'library/cover'))));
+
 
 app.use(bodyParser());
 
 app.use(router.routes()).use(router.allowedMethods())
+
+
 
 const PORT = 3000;
 app.listen(PORT, () => {

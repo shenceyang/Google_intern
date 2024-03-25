@@ -17,7 +17,7 @@
     data() {
       return {
         currentTrackIndex: 0,
-        tracks: [], // This will be filled with track data from your backend
+        tracks: [], //  track data from your backend
         trackUrl: '',
         trackTitle: '',
         trackSubtitle: '',
@@ -32,8 +32,8 @@
       async fetchTracks() {
         // Fetch track data from your backend
         try {
-          const response = await this.$http.get('/explore'); // Adjust this to match your API endpoint
-          this.tracks = response.data;
+            const response = await axios.get('http://localhost:3000/explore');
+            this.tracks = response.data;
         } catch (error) {
           console.error('Error fetching tracks:', error);
         }

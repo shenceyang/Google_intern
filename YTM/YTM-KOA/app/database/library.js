@@ -62,7 +62,7 @@ async function indexCreate(filePath) {
         //Sharp can directly store the image to jpeg
         await sharp(imageData)
         .jpeg({quality: 100})
-        .toFile(`./library/cover/${track.album_id}.jpg`)  
+        .toFile(`./library/cover/${track.track_id}.jpg`)  
     }
     
 }
