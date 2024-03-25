@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1 v-if="username">Welcome, {{ username }}</h1>
+      <h3 v-if="username">Welcome, {{ username }}</h3>
       <p v-else>Loading...</p>
     </div>
   </template>
