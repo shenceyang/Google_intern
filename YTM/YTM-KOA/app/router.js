@@ -73,7 +73,43 @@ router.get('/getuser', jwtAuth, async (ctx) => {
 
 router.get('/stream/:trackId', async (ctx, next) => {
   const trackId = ctx.params.trackId;
-  const filePath = path.join(__dirname, '..','library', 'media',`${trackId}.mp4`);
+  try {
+    const trackIndex = await readTrackIndex();
+    const track = trackIndex.find(t => t.track_id === trackId);
+    if (!track) {
+      ctx.status = 404;
+      ctx.body = 'Track not found';
+      return;
+    }
+    const filePath = path.join(__dirname, '..', 'local_storage', track.fileName);
+    
+    
+    if (!fs.existsSync(filePath)) {
+      ctx.status = 404;
+      ctx.body = 'File not found';
+      return;
+    }
+
+    console.log(filePath);
+    ctx.path = filePath;
+    ctx.request.header['range'] = 'bytes=0-';
+  
+    await koaMedia({
+      extMatch: /\.mp[3-4]$/i,
+    })(ctx); 
+
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+  await next();
+});
+
+
+/*
+router.get('/stream/:trackId', async (ctx, next) => {
+  const trackId = ctx.params.trackId;
+  const filePath = path.join(__dirname, '..','local_storage',`${trackId}.mp4`);
   console.log(filePath);
   ctx.path = filePath;
   ctx.request.header['range'] = 'bytes=0-';
@@ -86,6 +122,7 @@ router.get('/stream/:trackId', async (ctx, next) => {
 
 });
 
+*/
 
 
 //explore:get all music file in the library

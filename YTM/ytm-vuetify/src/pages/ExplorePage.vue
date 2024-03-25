@@ -6,25 +6,26 @@
     <!-- Tracks Display -->
     <v-row>
       <v-col
-        cols="12"  md="6"
+        cols="12" sm="6" md="4"
         v-for="track in tracks"
         :key="track.track_id"
         class="mb-4"
       >
-        <v-card class="track-card" elevation="2">
-          <!-- Image container -->
-          <div class="image-container">
-            <img
-              :src="getCoverImagePath(track.track_id)"
-              alt="Cover image"
-              class="cover-image"
-            >
-          </div>
-          <!-- Text content -->
-          <div class="text-content">
-            <div class="song-name">Song name: {{ track.title || track.fileName }}</div>
-            <div class="artist-name">Artist: {{ track.artist.join(', ') || 'Unknown Artist' }}</div>
-          </div>
+        <v-card @click="playTrack(track.track_id)"  class="track-card" elevation="2">
+
+            <div class="image-container">
+              <img
+                :src="getCoverImagePath(track.track_id)"
+                alt="Cover image"
+                class="cover-image"
+              >
+            </div>
+
+            <div class="text-content">
+              <div class="song-name">Song name: {{ track.title || track.fileName }}</div>
+              <div class="artist-name">Artist: {{ track.artist.join(', ') || 'Unknown Artist' }}</div>
+            </div>
+            
         </v-card>
         
       </v-col>
@@ -49,6 +50,10 @@ export default {
     await this.fetchTracks();
   },
   methods: {
+    playTrack(trackId) {
+      this.$router.push({ name: 'audioPlayer', params: { trackId } });
+    },
+
     async fetchTracks() {
       try {
         const response = await axios.get('http://localhost:3000/explore', { withCredentials: true });
@@ -68,49 +73,50 @@ export default {
 
 
 <style scoped>
-/* Adjust the column layout */
+
 .v-col {
   max-width: 33.33333%; /* Three columns in a row for md and up */
 }
 
 
 .explore-page {
-  background: black; /* White background for the page */
+  background: black;
 }
 
 .track-card {
-  max-width: 100%; /* Use this to control the width of the card */
-  margin: auto; /* Center the card if it's narrower than the column width */
-  box-shadow: 2px 2px 10px rgba(249, 249, 249, 0.1); /* Optional: Adds some shadow for depth */
-  border-radius: 4px; /* Optional: Rounds the corners */
-  overflow: hidden; /* Ensures the content fits within the rounded corners */
+  max-width: 100%; 
+  margin: auto; 
+  box-shadow: 2px 2px 10px rgba(249, 249, 249, 0.1); 
+  border-radius: 4px;
+  border-color: #fff;
+  overflow: hidden; 
 }
 .image-container {
-  height: 200px; /* Set a fixed height or use 'auto' to keep the aspect ratio */
+  height: 200px;
   width: 100%;
-  background-color: #000; /* A dark background if the image doesn't cover the area */
+  background-color: #000; 
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .cover-image {
-  max-height: 100%; /* Ensure the image fits in the container */
-  object-fit: contain; /* Contain the image to prevent cropping */
+  max-height: 100%; 
+  object-fit: contain; 
 }
 
 .text-content {
   padding: 16px;
-  text-align: center; /* Center the text */
-  background-color: #000; /* Background color for the text */
-  color: #fff; /* Text color */
+  text-align: center; 
+  background-color: #000; 
+  color: #fff;
 }
 
 .song-name {
-  font-size: 1.2em; /* Adjust the font size as necessary */
+  font-size: 1.2em; 
 }
 
 .artist-name {
-  font-size: 1em; /* Adjust the font size as necessary */
+  font-size: 1em;
 }
 </style>
