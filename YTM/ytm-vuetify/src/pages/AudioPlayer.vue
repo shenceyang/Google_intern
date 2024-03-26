@@ -1,25 +1,29 @@
 <template>
   <div>
     <button v-if="!userInteracted" @click="userHasInteracted">Play</button>
-    <v-audio-player
-      v-if="track && userInteracted"
-      :src="audioSrc"
-      :track-title="track.title"
-      :track-subtitle="getTrackSubtitle(track)"
-      :album-art="coverPic"
-      :autoplay="false"
-      :compact="compactMode"
-      prev-track-icon="mdi-skip-previous"
-      next-track-icon="mdi-skip-next"
-      back-forward-icon="mdi-rewind-5"
-      fast-forward-icon="mdi-fast-forward-5"
-      play-icon="mdi-play"
-      pause-icon="mdi-pause"
-      mute-volume-icon="mdi-volume-off"
-      low-volume-icon="mdi-volume-low"
-      medium-volume-icon="mdi-volume-medium"
-      high-volume-icon="mdi-volume-high"
-    ></v-audio-player>
+
+
+    <div class="audio-player-container">
+        <v-audio-player
+          v-if="track && userInteracted"
+          :src="audioSrc"
+          :track-title="track.title"
+          :track-subtitle="getTrackSubtitle(track)"
+          :album-art="coverPic"
+          :autoplay="false"
+          :compact="compactMode"
+          prev-track-icon="mdi-skip-previous"
+          next-track-icon="mdi-skip-next"
+          back-forward-icon="mdi-rewind-5"
+          fast-forward-icon="mdi-fast-forward-5"
+          play-icon="mdi-play"
+          pause-icon="mdi-pause"
+          mute-volume-icon="mdi-volume-off"
+          low-volume-icon="mdi-volume-low"
+          medium-volume-icon="mdi-volume-medium"
+          high-volume-icon="mdi-volume-high"
+        ></v-audio-player>
+  </div>
   </div>
 </template>
 
@@ -27,6 +31,7 @@
 import axios from 'axios';
 import VAudioPlayer from '@woodydark/vuetify-audio-player';
 import '@mdi/font/css/materialdesignicons.min.css';
+
 
 
 export default {
@@ -87,3 +92,18 @@ export default {
   },
 };
 </script>
+
+
+
+<style scoped>
+.audio-player-container {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Example background */
+  z-index: 1000; /* Ensure it stays on top of other content */
+  padding: 10px 0; /* Some padding */
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.3); /* Optional: add shadow for better visibility */
+}
+</style>

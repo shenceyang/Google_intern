@@ -5,8 +5,16 @@ import { createVuetify } from 'vuetify';
 import "vuetify/dist/vuetify.min.css";
 import 'vuetify/styles'; 
 
+import '@mdi/font/css/materialdesignicons.min.css';
+
+
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+
+// !!!!![Vue warn]: Failed to resolve component: 
+// Solve it using https://stackoverflow.com/questions/70719044/vue-warn-failed-to-resolve-component-v-toolbar-title-issue-vue3-and-vuetify 
+
+const app = createApp(App);
 
 const vuetify = createVuetify(
     {
@@ -15,10 +23,6 @@ const vuetify = createVuetify(
     }
 ); 
 
-// !!!!![Vue warn]: Failed to resolve component: 
-// Solve it using https://stackoverflow.com/questions/70719044/vue-warn-failed-to-resolve-component-v-toolbar-title-issue-vue3-and-vuetify 
-
-const app = createApp(App);
-app.use(vuetify); // Use the Vuetify instance
+app.use(vuetify); 
 app.use(router);
 app.mount('#app');
