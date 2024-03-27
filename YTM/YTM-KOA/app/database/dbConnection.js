@@ -149,13 +149,8 @@ async function writeTrackIndex(trackInfo) {
 
 async function writePlaylist(playlistData) {
     try{
-        console.log("hey im in writePlaylist")
-        console.log(playlistData)
-    
+       
         const newPlaylist = new playListsIndex(playlistData);
-
-        console.log(newPlaylist)
-
         await newPlaylist.save().catch(err => {
             console.log("failed to save playlist info to db")
             console.error(err)})

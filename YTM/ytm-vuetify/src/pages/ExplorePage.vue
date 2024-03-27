@@ -1,8 +1,10 @@
 <template>
+   <!-- User Greeting -->
+   <user-greeting></user-greeting>
+
+  <!-- SearchAlbum Component -->
+  <search-album></search-album>
   <v-container fluid class="explore-page">
-    <!-- User Greeting -->
-    <user-greeting></user-greeting>
-    
     <!-- Tracks Display -->
     <v-row>
       <v-col
@@ -35,11 +37,13 @@
 
 <script>
 import axios from 'axios';
-import UserGreeting from '../components/UserGreeting.vue'; // Make sure this path is correct
+import UserGreeting from '../components/UserGreeting.vue'; 
+import SearchAlbum from '../components/SearchAlbum.vue';
 
 export default {
   components: {
-    UserGreeting
+    UserGreeting,
+    SearchAlbum
   },
   data() {
     return {

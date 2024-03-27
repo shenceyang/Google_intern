@@ -150,12 +150,8 @@ router.post('/playlist', jwtAuth, async (ctx) => {
       description: playlistData.description,
       tracks: [] // Initialize with an empty array of tracks
     };
-     console.log(newPlaylistData);
-
-
-    console.log('yo');
+    
     await writePlaylist(newPlaylistData);
-    console.log('yo2');
     ctx.status = 200;  
   } catch (error) {
     ctx.status = 500;
@@ -181,27 +177,30 @@ router.get('/playlist/:pid', async (ctx) => {
   }
 });
 
+
 //return all tracks that has the album pid in the Track collection
 router.get('/album/:pid', jwtAuth, async (ctx) => {
-  const albumName = ctx.params.pid; // Assuming pid is the album name for hashing
-  const albumIdHash = crypto.createHash('md5').update(albumName).digest('hex').substring(0, 16);
-  
-  try {
-      const tracks = await readTrackIndex();
-      const filteredTracks = tracks.filter(track => track.album_id === albumIdHash);
+  const searchTerm = ctx.params.pid;  // assume pid is the name of the album
+  const regex = new RegExp(searchTerm, 'i'); // 'i' for case insensitive
 
-      if (filteredTracks.length > 0) {
-          ctx.status = 200;
-          ctx.body = filteredTracks;
-      } else {
-          ctx.status = 404;
-          ctx.body = { message: 'No tracks found for the given album' };
-      }
+  try {
+    const tracks = await readTrackIndex();
+    // Use the RegExp to test for a partial match in the album name
+    const filteredTracks = tracks.filter(track => regex.test(track.album));
+
+    if (filteredTracks.length > 0) {
+      ctx.status = 200;
+      ctx.body = filteredTracks;
+    } else {
+      ctx.status = 200;
+      ctx.body = { message: 'No tracks found matching the search term' };
+    }
   } catch (error) {
-      ctx.status = 500;
-      ctx.body = { message: 'Internal server error', error: error.message };
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
   }
 });
+
 
 
 

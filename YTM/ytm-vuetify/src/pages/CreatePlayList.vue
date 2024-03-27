@@ -65,11 +65,11 @@ export default {
         description: this.newPlaylist.description,
         public: this.newPlaylist.public === 'Public'
       };
+      //save playlist to db   
+      await axios.post('http://localhost:3000/playlist', playlistToSave,{ withCredentials: true });
 
-      console.log('Playlist to save:', playlistToSave);
-      
-      const res = await axios.post('http://localhost:3000/playlist', playlistToSave,{ withCredentials: true });
-      console.log('Response:', res.data);
+      //jump to the playlist page
+      this.$router.push('/playlist');
   }
   }
 };

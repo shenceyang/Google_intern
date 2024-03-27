@@ -5,7 +5,7 @@ import Home from './pages/Home.vue';
 import Explore from './pages/ExplorePage.vue';
 import AudioPlayerPage from './pages/AudioPlayer.vue';
 import CreatePlayList from './pages/CreatePlayList.vue';
-
+import SearchResult from './pages/SearchResult.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -22,7 +22,14 @@ const router = createRouter({
         },
         {   path: '/createplaylist',
             component: CreatePlayList
+        },
+        {
+            path: '/result',
+            name: 'result',
+            component: SearchResult,
+            props: true
         }
+
     ]
 })
 
