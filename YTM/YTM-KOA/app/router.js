@@ -7,7 +7,10 @@ const login = require('./core/auth.js').login;
 const signup = require('./core/auth.js').signup;
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const {readTrackIndex,readPlaylistByPid} = require('./database/dbconnection.js');
+const crypto = require('crypto');
+
+const {findUser} = require('./database/auth.js');
+const {readTrackIndex,readPlaylistByPid,writePlaylist} = require('./database/dbconnection.js');
 
 
 
@@ -63,7 +66,7 @@ router.post('/signup', async ctx => {
 
 
 
-// getUser route
+// get username from jwt token
 router.get('/getuser', jwtAuth, async (ctx) => {
   // Extract the username from the state.user, which was set by the jwtAuth middleware
   const { username } = ctx.state.user;
@@ -71,6 +74,21 @@ router.get('/getuser', jwtAuth, async (ctx) => {
 });
 
 
+// return uid of the user
+router.get('/user/:username', async (ctx) => {
+  const username = ctx.params.username;
+  const user = await findUser(username);
+  if (user) {
+      ctx.status = 200;
+      ctx.body = user.uid;
+  }
+  else {
+      ctx.status = 404;
+      ctx.body = { message: 'User not found' };
+  }
+});
+
+//stream audio file
 router.get('/stream/:trackId', async (ctx, next) => {
   const trackId = ctx.params.trackId;
   try {
@@ -82,7 +100,6 @@ router.get('/stream/:trackId', async (ctx, next) => {
       return;
     }
     const filePath = path.join(__dirname, '..', 'local_storage', track.fileName);
-    
     
     if (!fs.existsSync(filePath)) {
       ctx.status = 404;
@@ -106,24 +123,6 @@ router.get('/stream/:trackId', async (ctx, next) => {
 });
 
 
-/*
-router.get('/stream/:trackId', async (ctx, next) => {
-  const trackId = ctx.params.trackId;
-  const filePath = path.join(__dirname, '..','local_storage',`${trackId}.mp4`);
-  console.log(filePath);
-  ctx.path = filePath;
-  ctx.request.header['range'] = 'bytes=0-';
-
-  await koaMedia({
-    extMatch: /\.mp[3-4]$/i,
-  })(ctx); 
-
-  await next();
-
-});
-
-*/
-
 
 //explore:get all music file in the library
 router.get('/explore', async (ctx, next) => {
@@ -133,6 +132,36 @@ router.get('/explore', async (ctx, next) => {
   await next();
 });
 
+
+
+//create playlist
+router.post('/playlist', jwtAuth, async (ctx) => {
+  try {
+    
+    console.log('yo1');
+    const playlistData = ctx.request.body;
+    const pid = crypto.createHash('md5').update(playlistData.name).digest('hex').substring(0, 16);
+
+
+    const newPlaylistData = {
+      pid: pid,
+      author: playlistData.author,
+      name: playlistData.name,
+      description: playlistData.description,
+      tracks: [] // Initialize with an empty array of tracks
+    };
+     console.log(newPlaylistData);
+
+
+    console.log('yo');
+    await writePlaylist(newPlaylistData);
+    console.log('yo2');
+    ctx.status = 200;  
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
 
 
 router.get('/playlist/:pid', async (ctx) => {

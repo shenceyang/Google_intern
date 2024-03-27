@@ -44,4 +44,5 @@ async function findUser(username){
     })
 }
 
+
 module.exports = { createUser, findUser };

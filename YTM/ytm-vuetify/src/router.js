@@ -4,6 +4,7 @@ import Signup from './pages/UserSignup.vue';
 import Home from './pages/Home.vue';
 import Explore from './pages/ExplorePage.vue';
 import AudioPlayerPage from './pages/AudioPlayer.vue';
+import CreatePlayList from './pages/CreatePlayList.vue';
 
 
 const router = createRouter({
@@ -18,7 +19,10 @@ const router = createRouter({
             name: 'audioPlayer',
             component: AudioPlayerPage,
             props: true, // Allows the component to receive the dynamic segment as a prop
-          },
+        },
+        {   path: '/createplaylist',
+            component: CreatePlayList
+        }
     ]
 })
 

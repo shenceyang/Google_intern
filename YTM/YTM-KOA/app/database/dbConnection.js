@@ -136,16 +136,34 @@ async function readPlaylistsByUserId(userId) {
 
 
 
+
+async function writeTrackIndex(trackInfo) {
+    const trackDocument = new Track(trackInfo);
+    //console.log(trackDocument)
+    await trackDocument.save().catch(err => {
+        console.log("failed to save track info to db")
+        console.error(err)
+    })
+}
+
+
 async function writePlaylist(playlistData) {
-    try {
+    try{
+        console.log("hey im in writePlaylist")
+        console.log(playlistData)
+    
         const newPlaylist = new playListsIndex(playlistData);
-        await newPlaylist.save();
-        console.log('Playlist created successfully:', newPlaylist);
-        return newPlaylist;
-    } catch (error) {
-        console.error('Error creating new playlist:', error);
-        throw error; // or handle it as needed
-    }
+
+        console.log(newPlaylist)
+
+        await newPlaylist.save().catch(err => {
+            console.log("failed to save playlist info to db")
+            console.error(err)})
+        } catch (error) {
+            console.error('Error writing playlist to db:', error);
+            throw error; // or handle it as needed
+        }
+    
 }
 
 async function updatePlaylistByPid(pid, updateData) {
