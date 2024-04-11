@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 const {findUser} = require('./database/auth.js');
-const {readTrackIndex,readPlaylistByPid,writePlaylist} = require('./database/dbconnection.js');
+const {readTrackIndex,readPlaylistByPid,writePlaylist, readPlaylistsByUserId} = require('./database/dbConnection.js');
 
 
 
@@ -88,6 +88,7 @@ router.get('/user/:username', async (ctx) => {
   }
 });
 
+
 //stream audio file
 router.get('/stream/:trackId', async (ctx, next) => {
   const trackId = ctx.params.trackId;
@@ -159,7 +160,7 @@ router.post('/playlist', jwtAuth, async (ctx) => {
   }
 });
 
-
+//search playlist:
 router.get('/playlist/:pid', async (ctx) => {
   const pid = ctx.params.pid;
   try {
@@ -178,7 +179,7 @@ router.get('/playlist/:pid', async (ctx) => {
 });
 
 
-//return all tracks that has the album pid in the Track collection
+//searchalnum: return all tracks that has the album pid in the Track collection
 router.get('/album/:pid', jwtAuth, async (ctx) => {
   const searchTerm = ctx.params.pid;  // assume pid is the name of the album
   const regex = new RegExp(searchTerm, 'i'); // 'i' for case insensitive
@@ -198,6 +199,90 @@ router.get('/album/:pid', jwtAuth, async (ctx) => {
   } catch (error) {
     ctx.status = 500;
     ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
+
+
+//search songs:
+router.get('/songs/:pid', jwtAuth, async (ctx) => {
+  const searchTerm = ctx.params.pid;  // assume pid is the name of the album
+  const regex = new RegExp(searchTerm, 'i'); // 'i' for case insensitive
+
+  try {
+    const tracks = await readTrackIndex();
+    // Use the RegExp to test for a partial match in the album name
+    const filteredTracks = tracks.filter(track => regex.test(track.title));
+
+    if (filteredTracks.length > 0) {
+      ctx.status = 200;
+      ctx.body = filteredTracks;
+    } else {
+      ctx.status = 200;
+      ctx.body = { message: 'No tracks found matching the search term' };
+    }
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
+
+
+// Search songs by artist
+router.get('/artists/:artistName', jwtAuth, async (ctx) => {
+  const searchTerm = ctx.params.artistName;
+  const regex = new RegExp(searchTerm, 'i'); // 'i' for case insensitive
+
+  try {
+    const tracks = await readTrackIndex();
+    // Use the RegExp to test for a partial match in the artist array
+    const filteredTracks = tracks.filter(track => 
+      track.artist.some(artistName => regex.test(artistName))
+    );
+
+    if (filteredTracks.length > 0) {
+      ctx.status = 200;
+      ctx.body = filteredTracks;
+    } else {
+      ctx.status = 200;
+      ctx.body = { message: 'No tracks found for the given artist' };
+    }
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//return playlist by author
+router.get('/playlist/author/:author', async (ctx) => {
+  const author = ctx.params.author;
+  console.log(author);
+  try {
+      const playlists = await readPlaylistsByUserId(author);
+      //console.log(playlists);
+      if (playlists) {
+          ctx.status = 200;    
+          ctx.body = playlists;
+      } else {
+          ctx.status = 404;
+          ctx.body = { message: 'Playlist not found' };
+      }
+  } catch (error) {
+      ctx.status = 500;
+      ctx.body = { message: 'Internal server error', error: error.message };
   }
 });
 

@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const { isMainThread, parentPort, Worker, workerData } = require('worker_threads');
 const {parseFile} = require('music-metadata');
 const sharp = require('sharp');
-const { readTrackIndex,writeTrackIndex } = require('./dbconnection');
+const { readTrackIndex,writeTrackIndex } = require('./dbConnection');
 
 
 

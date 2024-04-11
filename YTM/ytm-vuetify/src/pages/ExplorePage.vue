@@ -4,6 +4,9 @@
 
   <!-- SearchAlbum Component -->
   <search-album></search-album>
+
+
+  <!-- Tracks Display -->
   <v-container fluid class="explore-page">
     <!-- Tracks Display -->
     <v-row>

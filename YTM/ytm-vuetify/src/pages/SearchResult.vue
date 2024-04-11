@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="search-results-page">
-    <!-- SearchAlbum Component (optional, if you want to include it here as well) -->
+    <!-- Optionally, you can include the SearchAlbum component here as well -->
     <!-- <search-album></search-album> -->
 
     <!-- Tracks Display -->
@@ -21,10 +21,13 @@
           </div>
 
           <div class="text-content">
-            <div class="song-name">Song name: {{ track.title || track.fileName }}</div>
-            <div class="artist-name">Artist: {{ track.artist.join(', ') || 'Unknown Artist' }}</div>
+            <div class="song-name">{{ track.title || track.fileName }}</div>
+            <div class="artist-name">{{ track.artist.join(', ') || 'Unknown Artist' }}</div>
           </div>
         </v-card>
+      </v-col>
+      <v-col v-if="!tracks.length" cols="12">
+        No tracks found.
       </v-col>
     </v-row>
   </v-container>
@@ -32,21 +35,30 @@
 
 <script>
 export default {
-  props: {
-    tracks: Array
+  data() {
+    return {
+      tracks: [],
+    };
   },
+
   created() {
-    if (!this.tracks || this.tracks.length === 0) {
-      console.log('No tracks to display.');
-      alert('No tracks to display.');
-      // Optionally, redirect back
-      // this.$router.push({ name: 'home' });
+    if (this.$route.query.tracks) {
+      try {
+        this.tracks = JSON.parse(this.$route.query.tracks);
+        console.log('Tracks in SearchResult:', this.tracks);
+      } catch (e) {
+        console.error('Error parsing tracks:', e);
+        this.tracks = [];
+        // Handle the error appropriately
+      }
     }
   },
+  
   methods: {
     playTrack(trackId) {
       this.$router.push({ name: 'audioPlayer', params: { trackId } });
     },
+    
     getCoverImagePath(trackId) {
       return `http://localhost:3000/cover/${trackId}.jpg`;
     }
@@ -55,46 +67,7 @@ export default {
 </script>
 
 <style scoped>
-/* Use the same styles as your explorepage component */
 .search-results-page {
   background: black;
-}
-
-.track-card {
-  max-width: 100%;
-  margin: auto;
-  box-shadow: 2px 2px 10px rgba(249, 249, 249, 0.1);
-  border-radius: 4px;
-  border-color: #fff;
-  overflow: hidden;
-}
-
-.image-container {
-  height: 200px;
-  width: 100%;
-  background-color: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.cover-image {
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.text-content {
-  padding: 16px;
-  text-align: center;
-  background-color: #000;
-  color: #fff;
-}
-
-.song-name {
-  font-size: 1.2em;
-}
-
-.artist-name {
-  font-size: 1em;
 }
 </style>

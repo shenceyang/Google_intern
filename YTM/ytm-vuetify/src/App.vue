@@ -1,13 +1,6 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <div>
           <router-view></router-view>
-        </div>
-      </div>
-    </div>
-  </div>
+ 
 </template>
 
 <script>
@@ -21,5 +14,21 @@ export default {
 </script>
 
 <style>
+/* src/assets/global.css */
+
+html, body, #app {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
+  
+  /* If you need to reset padding for Vuetify's containers */
+  .container, .container--fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+
 
 </style>

@@ -95,13 +95,16 @@ export default{
             axios.post('http://localhost:3000/signup', data)
             .then(response => {
                 console.log(response);
+                alert('Sign up successfully, You can login now !');
+      
+                this.$router.push('/login');
             })
             .catch(error => {
                 console.log(error);
             });
 
 
-            this.$router.push('/login');
+       
 
             
             

@@ -15,17 +15,25 @@
   </script>
   
   <style scoped>
-  .home-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    width: 100vw;
-    background-image: url('../assets/home.jpg');
-    background-size: cover;
-    background-position: center bottom;
-  }
+   * {
+       margin: 0;
+   }
+   
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  margin: 0; /* Reset any default margin */
+  padding: 0; /* Reset any default padding */
+  background-image: url('../assets/home.jpg');
+  background-size: cover;
+  background-position: center bottom;
+}
+
   
   .title {
     font-size: 4rem; 

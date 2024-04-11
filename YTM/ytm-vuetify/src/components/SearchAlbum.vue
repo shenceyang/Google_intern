@@ -6,7 +6,7 @@
           <v-text-field
             v-model="trackSearch"
             append-icon="mdi-magnify"
-            label="Search tracks by PID"
+            label="Search albums, songs, or artists"
             single-line
             hide-details
             @keyup.enter="searchTrackByPid"
@@ -28,31 +28,42 @@
     methods: {
       async searchTrackByPid() {
        
-
         if (!this.trackSearch.trim()) {
-        alert('Please enter a PID to search for.');
+        alert('Please enter a album to search for.');
         return;
         }
 
         try {
-            const response = await axios.get(`http://localhost:3000/album/${this.trackSearch}`, { withCredentials: true });
+            let response = await axios.get(`http://localhost:3000/album/${this.trackSearch}`, { withCredentials: true });
             
             if (response.data && response.data.length>0) {
            
-                const tracks = response.data;
-                
+                let tracks = response.data;
+                console.log('tracks in the searchAlbum page:', tracks);
+                this.$router.push({ name: 'result', query: { tracks: JSON.stringify(tracks) } });
 
-                console.log('Received tracks:', tracks);
-
-                //check if trakcs is an array
-                console.log('Is tracks an array:', Array.isArray(tracks));
-
-                //jump to search result ith the tracks data
-                this.$router.push({ name: 'result', params: {tracks} });
 
             } else if (response.data && response.data.message) {
-                alert(response.data.message);
-                return;
+
+                // no album then search for song
+                response = await axios.get(`http://localhost:3000/songs/${this.trackSearch}`, { withCredentials: true });
+                if (response.data && response.data.length>0) {
+                  let tracks = response.data;
+                  this.$router.push({ name: 'result', query: { tracks: JSON.stringify(tracks) } });
+                } else if (response.data && response.data.message) {
+                 
+
+                  //search for artist
+                  response = await axios.get(`http://localhost:3000/artists/${this.trackSearch}`, { withCredentials: true });
+                  if (response.data && response.data.length>0) {
+                    let tracks = response.data;
+                    this.$router.push({ name: 'result', query: { tracks: JSON.stringify(tracks) } });
+                  } else if (response.data && response.data.message) {
+                    alert('No results found');
+                  }
+
+                }
+               
             }
           
         } catch (error) {

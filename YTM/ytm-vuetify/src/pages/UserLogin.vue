@@ -92,8 +92,15 @@ export default{
             //need to add {withCredentials: true} to send cookies
             axios.post('http://localhost:3000/login', data,{ withCredentials: true })
             .then(response => {
-                console.log(response);
-                this.$router.push('/explore');
+                
+                if (response.data && response.data.status === 0) {
+                    // Login successful, redirect to explore page
+                    this.$router.push('/explore');
+                } else {
+                    // Handle login failure (you might want to show an error message to the user)
+                    console.error(response.data.msg || 'Login failed');
+                    alert('Login failed');
+                }
 
             })
             .catch(error => {

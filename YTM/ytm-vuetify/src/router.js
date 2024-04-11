@@ -6,6 +6,7 @@ import Explore from './pages/ExplorePage.vue';
 import AudioPlayerPage from './pages/AudioPlayer.vue';
 import CreatePlayList from './pages/CreatePlayList.vue';
 import SearchResult from './pages/SearchResult.vue';
+import UserLibrary from './pages/UserLibrary.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -13,7 +14,7 @@ const router = createRouter({
         { path: '/', component: Home},
         { path: '/login', component: Login },
         { path: '/signup', component: Signup },
-        { path: '/explore', component: Explore},
+        { path: '/explore', name:'Explore',component: Explore, props: true},
         {
             path: '/play/:trackId',
             name: 'audioPlayer',
@@ -23,12 +24,20 @@ const router = createRouter({
         {   path: '/createplaylist',
             component: CreatePlayList
         },
+        
         {
             path: '/result',
             name: 'result',
             component: SearchResult,
             props: true
+        },
+        {
+            path: '/library',
+            name: 'UserLibrary',
+            component: UserLibrary,
+            props: true
         }
+
 
     ]
 })

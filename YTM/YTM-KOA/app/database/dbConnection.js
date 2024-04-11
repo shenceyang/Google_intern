@@ -1,3 +1,4 @@
+const { read } = require('fs');
 const connectCluster = require('./clusterConnection')
 connectCluster();
 
@@ -124,6 +125,10 @@ async function readPlaylistByPid(pid) {
     }
 }
 
+
+
+
+
 async function readPlaylistsByUserId(userId) {
     try {
         const playlists = await playListsIndex.find({ author: userId }).exec();
@@ -181,4 +186,4 @@ async function updatePlaylistByPid(pid, updateData) {
 
 
 module.exports = {writeTrackIndex, readTrackIndex, deleteTrackIndex,
-                  readPlaylistByPid, readPlaylistsByUserId, writePlaylist, updatePlaylistByPid}
+                  readPlaylistByPid, readPlaylistsByUserId, writePlaylist, updatePlaylistByPid, readPlaylistsByUserId}
