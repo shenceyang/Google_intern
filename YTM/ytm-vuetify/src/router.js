@@ -11,7 +11,7 @@ import UserLibrary from './pages/UserLibrary.vue';
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/', component: Home},
+        { path: '/', name:"home", component: Home},
         { path: '/login', component: Login },
         { path: '/signup', component: Signup },
         { path: '/explore', name:'Explore',component: Explore, props: true},

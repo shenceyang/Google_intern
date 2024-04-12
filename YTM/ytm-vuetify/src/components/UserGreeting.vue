@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h3 v-if="username">Welcome, {{ username }}</h3>
+      <h3 v-if="username">Welcome to YTM, {{ username }}</h3>
       <p v-else>Loading...</p>
     </div>
   </template>
@@ -30,3 +30,12 @@
   };
   </script>
   
+  <style scoped>
+h3 {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 2rem; 
+  font-weight: 500; 
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+</style>

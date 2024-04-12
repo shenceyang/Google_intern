@@ -1,10 +1,10 @@
 <template>
-   <!-- User Greeting -->
-   <user-greeting></user-greeting>
+    <!-- NavBar Component -->
+    <nav-bar></nav-bar>
 
   <!-- SearchAlbum Component -->
   <search-album></search-album>
-
+ 
 
   <!-- Tracks Display -->
   <v-container fluid class="explore-page">
@@ -40,13 +40,13 @@
 
 <script>
 import axios from 'axios';
-import UserGreeting from '../components/UserGreeting.vue'; 
 import SearchAlbum from '../components/SearchAlbum.vue';
+import NavBar from '../components/NavBar.vue';
 
 export default {
   components: {
-    UserGreeting,
-    SearchAlbum
+    SearchAlbum,
+    NavBar,
   },
   data() {
     return {

@@ -77,7 +77,6 @@
   };
   </script>
   
-  <style scoped>
-  /* Styles here */
-  </style>
-  
+<style scoped>
+
+</style>
