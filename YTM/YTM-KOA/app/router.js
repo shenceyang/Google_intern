@@ -13,8 +13,9 @@ const {findUser} = require('./database/auth.js');
 const {readTrackIndex,readPlaylistByPid,writePlaylist, readPlaylistsByUserId} = require('./database/dbConnection.js');
 
 
-
+//----------------------------------------------User info api------------------------------------------------------------
 const jwtSecret = 'YTM';
+
 
 //jwt auth middleware
 const jwtAuth = async (ctx, next) => {
@@ -34,6 +35,8 @@ const jwtAuth = async (ctx, next) => {
   }
 }
 
+
+//login
 router.post('/login', async ctx => {
   await login(ctx.request.body.username, ctx.request.body.password).then((result) => {
       if (result) {
@@ -50,6 +53,7 @@ router.post('/login', async ctx => {
 })
 
 
+//signup
 router.post('/signup', async ctx => {
 
   await signup(ctx.request.body.username, ctx.request.body.password).then((result) => {
@@ -63,7 +67,6 @@ router.post('/signup', async ctx => {
       }
   })
 })
-
 
 
 // get username from jwt token
@@ -87,9 +90,13 @@ router.get('/user/:username', async (ctx) => {
       ctx.body = { message: 'User not found' };
   }
 });
+//----------------------------------------------User info api------------------------------------------------------------
 
 
-//stream audio file
+
+
+
+//---------------------------------------------------stream audio file------------------------------------------------
 router.get('/stream/:trackId', async (ctx, next) => {
   const trackId = ctx.params.trackId;
   try {
@@ -101,31 +108,32 @@ router.get('/stream/:trackId', async (ctx, next) => {
       return;
     }
     const filePath = path.join(__dirname, '..', 'local_storage', track.fileName);
-    
     if (!fs.existsSync(filePath)) {
       ctx.status = 404;
       ctx.body = 'File not found';
       return;
     }
-
     console.log(filePath);
     ctx.path = filePath;
     ctx.request.header['range'] = 'bytes=0-';
-  
     await koaMedia({
       extMatch: /\.mp[3-4]$/i,
     })(ctx); 
-
   } catch (error) {
     ctx.status = 500;
     ctx.body = { message: 'Internal server error', error: error.message };
   }
   await next();
 });
+//---------------------------------------------------stream audio file------------------------------------------------
 
 
 
-//explore:get all music file in the library
+
+
+//-------------------------------------------------------Tracks API----------------------------------------------------------
+
+//Get all tracks in the db
 router.get('/explore', async (ctx, next) => {
   const trackIndex = await readTrackIndex();
   ctx.type = 'json';
@@ -133,86 +141,14 @@ router.get('/explore', async (ctx, next) => {
   await next();
 });
 
-
-
-//create playlist
-router.post('/playlist', jwtAuth, async (ctx) => {
-  try {
-    
-    console.log('yo1');
-    const playlistData = ctx.request.body;
-    const pid = crypto.createHash('md5').update(playlistData.name).digest('hex').substring(0, 16);
-
-
-    const newPlaylistData = {
-      pid: pid,
-      author: playlistData.author,
-      name: playlistData.name,
-      description: playlistData.description,
-      tracks: [] // Initialize with an empty array of tracks
-    };
-    
-    await writePlaylist(newPlaylistData);
-    ctx.status = 200;  
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { message: 'Internal server error', error: error.message };
-  }
-});
-
-//search playlist:
-router.get('/playlist/:pid', async (ctx) => {
-  const pid = ctx.params.pid;
-  try {
-      const playlist = await readPlaylistByPid(pid);
-      if (playlist) {
-          ctx.status = 200;
-          ctx.body = playlist;
-      } else {
-          ctx.status = 404;
-          ctx.body = { message: 'Playlist not found' };
-      }
-  } catch (error) {
-      ctx.status = 500;
-      ctx.body = { message: 'Internal server error', error: error.message };
-  }
-});
-
-
-//searchalnum: return all tracks that has the album pid in the Track collection
-router.get('/album/:pid', jwtAuth, async (ctx) => {
-  const searchTerm = ctx.params.pid;  // assume pid is the name of the album
-  const regex = new RegExp(searchTerm, 'i'); // 'i' for case insensitive
-
-  try {
-    const tracks = await readTrackIndex();
-    // Use the RegExp to test for a partial match in the album name
-    const filteredTracks = tracks.filter(track => regex.test(track.album));
-
-    if (filteredTracks.length > 0) {
-      ctx.status = 200;
-      ctx.body = filteredTracks;
-    } else {
-      ctx.status = 200;
-      ctx.body = { message: 'No tracks found matching the search term' };
-    }
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { message: 'Internal server error', error: error.message };
-  }
-});
-
-
-//search songs:
+//Get information about a single song/track
 router.get('/songs/:pid', jwtAuth, async (ctx) => {
   const searchTerm = ctx.params.pid;  // assume pid is the name of the album
   const regex = new RegExp(searchTerm, 'i'); // 'i' for case insensitive
-
   try {
     const tracks = await readTrackIndex();
     // Use the RegExp to test for a partial match in the album name
     const filteredTracks = tracks.filter(track => regex.test(track.title));
-
     if (filteredTracks.length > 0) {
       ctx.status = 200;
       ctx.body = filteredTracks;
@@ -227,7 +163,7 @@ router.get('/songs/:pid', jwtAuth, async (ctx) => {
 });
 
 
-// Search songs by artist
+// Search songs/tracks by artist
 router.get('/artists/:artistName', jwtAuth, async (ctx) => {
   const searchTerm = ctx.params.artistName;
   const regex = new RegExp(searchTerm, 'i'); // 'i' for case insensitive
@@ -253,6 +189,28 @@ router.get('/artists/:artistName', jwtAuth, async (ctx) => {
 });
 
 
+//return all tracks that has the album pid in the Track collection
+router.get('/album/:pid', jwtAuth, async (ctx) => {
+  const searchTerm = ctx.params.pid;  // assume pid is the name of the album
+  const regex = new RegExp(searchTerm, 'i'); // 'i' for case insensitive
+  try {
+    const tracks = await readTrackIndex();
+    // Use the RegExp to test for a partial match in the album name
+    const filteredTracks = tracks.filter(track => regex.test(track.album));
+
+    if (filteredTracks.length > 0) {
+      ctx.status = 200;
+      ctx.body = filteredTracks;
+    } else {
+      ctx.status = 200;
+      ctx.body = { message: 'No tracks found matching the search term' };
+    }
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
+//-------------------------------------------------------Tracks API----------------------------------------------------------
 
 
 
@@ -261,10 +219,47 @@ router.get('/artists/:artistName', jwtAuth, async (ctx) => {
 
 
 
+//------------------------------------------------------Playlist API-----------------------------------------------------------
 
+//create playlist
+router.post('/playlist', jwtAuth, async (ctx) => {
+  try {
+    
+    console.log('yo1');
+    const playlistData = ctx.request.body;
+    const pid = crypto.createHash('md5').update(playlistData.name).digest('hex').substring(0, 16);
+    const newPlaylistData = {
+      pid: pid,
+      author: playlistData.author,
+      name: playlistData.name,
+      description: playlistData.description,
+      tracks: [] // Initialize with an empty array of tracks
+    };
+    await writePlaylist(newPlaylistData);
+    ctx.status = 200;  
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
 
-
-
+//Get info about playlist with pid:
+router.get('/playlist/:pid', async (ctx) => {
+  const pid = ctx.params.pid;
+  try {
+      const playlist = await readPlaylistByPid(pid);
+      if (playlist) {
+          ctx.status = 200;
+          ctx.body = playlist;
+      } else {
+          ctx.status = 404;
+          ctx.body = { message: 'Playlist not found' };
+      }
+  } catch (error) {
+      ctx.status = 500;
+      ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
 
 //return playlist by author
 router.get('/playlist/author/:author', async (ctx) => {
@@ -285,6 +280,71 @@ router.get('/playlist/author/:author', async (ctx) => {
       ctx.body = { message: 'Internal server error', error: error.message };
   }
 });
+
+
+                                                            // TBC
+//add tracks with tid to the playlist with pid
+router.post('/playlist/:pid', async (ctx) => {
+  const { pid } = ctx.params;
+  const { tid } = ctx.request.body; // Expecting the track ID in the request body
+  try {
+    const playlist = await readPlaylistByPid(pid);
+    if (!playlist) {
+      ctx.status = 404;
+      ctx.body = { message: 'Playlist not found' };
+      return;
+    }
+
+    const trackIndex = await readTrackIndex();
+    const track = trackIndex.find(t => t.track_id === tid);
+    if (!track) {
+      ctx.status = 404;
+      ctx.body = { message: 'Track not found' };
+      return;
+    }
+    if (!playlist.tracks.includes(tid)) {
+      playlist.tracks.push(tid);
+      await writePlaylist(playlist);
+      ctx.status = 200;
+      ctx.body = { message: 'Track added to playlist', playlist };
+    } else {
+      ctx.status = 400;
+      ctx.body = { message: 'Track already in playlist' };
+    }
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
+
+
+//delete track with tid from the playlist with pid
+router.delete('/playlist/:pid/tracks/:tid', jwtAuth, async (ctx) => {
+  const { pid, tid } = ctx.params;
+  try {
+    const playlist = await readPlaylistByPid(pid);
+    if (!playlist) {
+      ctx.status = 404;
+      ctx.body = { message: 'Playlist not found' };
+      return;
+    }
+    const trackIndex = playlist.tracks.indexOf(tid);
+    if (trackIndex === -1) {
+      ctx.status = 404;
+      ctx.body = { message: 'Track not found in playlist' };
+      return;
+    }
+    // Remove the track from the playlist
+    playlist.tracks.splice(trackIndex, 1);
+    await writePlaylist(playlist);
+    ctx.status = 200;
+    ctx.body = { message: 'Track removed from playlist', playlist };
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { message: 'Internal server error', error: error.message };
+  }
+});
+
 
 
 

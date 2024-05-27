@@ -1,6 +1,10 @@
 <template>
   <div class="library-page">
+
+    <nav-bar></nav-bar>
+
     <h1>Your Playlists</h1>
+
     <div v-if="playlists.length > 0">
       <div class="playlist" v-for="playlist in playlists" :key="playlist.id">
         <h3>{{ playlist.name }}</h3>
@@ -10,13 +14,26 @@
     <div v-else>
       <p>No playlists found.</p>
     </div>
+
+
+    <CreatePlayList></CreatePlayList>
+    
+
+
+
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import NavBar from '../components/NavBar.vue';
+import CreatePlayList from '../pages/CreatePlayList.vue';
 
 export default {
+  components: {
+    NavBar,
+    CreatePlayList,
+  },
   data() {
     return {
       playlists: [],
@@ -50,11 +67,5 @@ export default {
 </script>
 
 <style scoped>
-.library-page {
-  /* Your styles for the library page */
-}
 
-.playlist {
-  /* Your styles for individual playlist */
-}
 </style>
