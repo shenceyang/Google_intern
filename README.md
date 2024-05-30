@@ -1,4 +1,4 @@
-# Google internship 2024 (Jan. 2024 - May. 2024)
+# internship 2024 (Jan. 2024 - May. 2024)
 
 
 ## Title: Software Development
